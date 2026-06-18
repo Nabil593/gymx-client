@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Dumbbell, User, LogOut, LayoutDashboard, Settings } from 'lucide-react';
+import { Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
 import Image from 'next/image';
 
 export default function Navbar() {
@@ -11,15 +11,15 @@ export default function Navbar() {
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const pathname = usePathname();
 
-    // --- Mock Authentication State (Replace with Better Auth hooks) ---
+    // --- Mock Authentication State (Set to null to see Sign In / Sign Up buttons) ---
     const user = {
         name: "Shariea Reza",
         email: "shariea@example.com",
         photoURL: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=60",
-        role: "admin" // "user" | "trainer" | "admin"
+        role: "admin" // Options: "user" | "trainer" | "admin"
     };
     const logout = () => { console.log("Logged out"); };
-    // ------------------------------------------------------------------
+    // ------------------------------------------------------------------------------
 
     const toggleMenu = () => setIsOpen(!isOpen);
     const toggleProfile = () => setIsProfileOpen(!isProfileOpen);
@@ -33,11 +33,21 @@ export default function Navbar() {
             }`;
     };
 
-    const navLinks = (
+    // Main Navigation Routing List
+    const renderNavLinks = (isMobile = false) => (
         <>
-            <Link href="/" className={getLinkClass('/')}>Home</Link>
-            <Link href="/all-classes" className={getLinkClass('/all-classes')}>All Classes</Link>
-            <Link href="/community-forum" className={getLinkClass('/community-forum')}>Community Forum</Link>
+            <Link href="/" onClick={() => isMobile && setIsOpen(false)} className={getLinkClass('/')}>Home</Link>
+            <Link href="/all-classes" onClick={() => isMobile && setIsOpen(false)} className={getLinkClass('/all-classes')}>All Classes</Link>
+            <Link href="/community-forum" onClick={() => isMobile && setIsOpen(false)} className={getLinkClass('/community-forum')}>Community Forum</Link>
+            {user && (
+                <Link
+                    href={`/dashboard/${user.role}`}
+                    onClick={() => isMobile && setIsOpen(false)}
+                    className={getLinkClass(`/dashboard/${user.role}`)}
+                >
+                    Dashboard
+                </Link>
+            )}
         </>
     );
 
@@ -48,7 +58,7 @@ export default function Navbar() {
 
                     {/* Logo Section (X + shadcn aesthetic) */}
                     <Link href="/" className="flex items-center space-x-2 font-bold tracking-tight text-lg">
-                        <span className="bg-zinc-50 text-black px-1.5 py-0.5 rounded-md font-black tracking-tighter">
+                        <span className="bg-zinc-50 text-black px-1.5 py-0.5 rounded-md font-black tracking-tighter text-sm">
                             G
                         </span>
                         <span className="text-zinc-50 font-extrabold uppercase tracking-wide text-base">
@@ -56,12 +66,12 @@ export default function Navbar() {
                         </span>
                     </Link>
 
-                    {/* Desktop Links */}
+                    {/* Desktop Center Links */}
                     <div className="hidden md:flex items-center space-x-6">
-                        {navLinks}
+                        {renderNavLinks(false)}
                     </div>
 
-                    {/* Desktop Auth / Profile Dropdown */}
+                    {/* Desktop Right Action Area */}
                     <div className="hidden md:flex items-center space-x-4">
                         {user ? (
                             <div className="relative">
@@ -95,7 +105,7 @@ export default function Navbar() {
                                             className="flex items-center space-x-2 px-3 py-2 text-sm hover:bg-zinc-900 transition-colors"
                                         >
                                             <LayoutDashboard className="h-4 w-4 text-zinc-400" />
-                                            <span>Dashboard</span>
+                                            <span>Dashboard Overview</span>
                                         </Link>
 
                                         <button
@@ -109,12 +119,20 @@ export default function Navbar() {
                                 )}
                             </div>
                         ) : (
-                            <Link
-                                href="/login"
-                                className="bg-zinc-50 hover:bg-zinc-200 text-black text-xs font-semibold h-9 px-4 rounded-md inline-flex items-center justify-center transition-colors"
-                            >
-                                Join GymX
-                            </Link>
+                            <div className="flex items-center space-x-4">
+                                <Link
+                                    href="/login"
+                                    className="text-xs font-medium text-zinc-400 hover:text-zinc-50 transition-colors"
+                                >
+                                    Sign In
+                                </Link>
+                                <Link
+                                    href="/register"
+                                    className="bg-zinc-50 hover:bg-zinc-200 text-black text-xs font-semibold h-9 px-4 rounded-md inline-flex items-center justify-center transition-colors"
+                                >
+                                    Sign Up
+                                </Link>
+                            </div>
                         )}
                     </div>
 
@@ -131,12 +149,12 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* Mobile Menu Panel */}
+            {/* Mobile Expandable Navigation Panel */}
             {isOpen && (
                 <div className="md:hidden bg-black border-t border-zinc-800 text-zinc-200 absolute left-0 w-full shadow-2xl animate-in fade-in duration-200">
                     <div className="px-4 pt-3 pb-5 space-y-4">
                         <div className="flex flex-col space-y-3 pb-3 border-b border-zinc-900">
-                            {navLinks}
+                            {renderNavLinks(true)}
                         </div>
 
                         {user ? (
@@ -164,7 +182,7 @@ export default function Navbar() {
                                         className="flex items-center justify-center space-x-2 bg-zinc-900 text-zinc-100 py-2.5 rounded-md font-medium text-sm hover:bg-zinc-800 transition-colors border border-zinc-800"
                                     >
                                         <LayoutDashboard className="h-4 w-4" />
-                                        <span>Dashboard</span>
+                                        <span>Dashboard Menu</span>
                                     </Link>
                                     <button
                                         onClick={() => { logout(); setIsOpen(false); }}
@@ -176,13 +194,20 @@ export default function Navbar() {
                                 </div>
                             </div>
                         ) : (
-                            <div>
+                            <div className="flex flex-col gap-2 pt-1">
                                 <Link
                                     href="/login"
                                     onClick={() => setIsOpen(false)}
-                                    className="block text-center bg-zinc-50 text-black py-2.5 rounded-md font-medium text-sm hover:bg-zinc-200 transition-colors"
+                                    className="flex items-center justify-center bg-zinc-900 text-zinc-100 py-2.5 rounded-md font-medium text-sm hover:bg-zinc-800 transition-colors border border-zinc-800"
                                 >
-                                    Join GymX
+                                    Sign In
+                                </Link>
+                                <Link
+                                    href="/register"
+                                    onClick={() => setIsOpen(false)}
+                                    className="flex items-center justify-center bg-zinc-50 text-black py-2.5 rounded-md font-semibold text-sm hover:bg-zinc-200 transition-colors"
+                                >
+                                    Sign Up
                                 </Link>
                             </div>
                         )}
