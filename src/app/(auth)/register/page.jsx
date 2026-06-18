@@ -6,10 +6,6 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
-<<<<<<< HEAD
-=======
-// import { authClient } from "@/lib/auth-client";
->>>>>>> ad3999bd2c60772d104398a268f2378031fa1529
 
 export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false);
@@ -19,11 +15,7 @@ export default function RegisterPage() {
 
     const { register, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
-<<<<<<< HEAD
             role: "user" // Default role
-=======
-            role: "user" // ডিফল্ট সিলেক্টেড থাকবে user
->>>>>>> ad3999bd2c60772d104398a268f2378031fa1529
         }
     });
 
@@ -32,30 +24,16 @@ export default function RegisterPage() {
         setApiError("");
 
         try {
-<<<<<<< HEAD
-=======
-            // Better Auth Sign-Up API তে সরাসরি ফর্মের সিলেক্টেড রোল পাস হবে
->>>>>>> ad3999bd2c60772d104398a268f2378031fa1529
             const { error } = await authClient.signUp.email({
               email: data.email,
               password: data.password,
               name: data.name,
               image: data.image,
-<<<<<<< HEAD
               role: data.role
-=======
-              role: data.role // 'user', 'trainer', বা 'admin' সরাসরি যাবে
->>>>>>> ad3999bd2c60772d104398a268f2378031fa1529
             });
       
             if (error) throw new Error(error.message);
 
-<<<<<<< HEAD
-=======
-            console.log("Account Created with Selected Role:", data);
-
-            // রোল অনুযায়ী সরাসরি ড্যাশবোর্ডে পুশ
->>>>>>> ad3999bd2c60772d104398a268f2378031fa1529
             router.push(`/login`);
         } catch (err) {
             setApiError(err.message || "Registration failed. Try again.");
