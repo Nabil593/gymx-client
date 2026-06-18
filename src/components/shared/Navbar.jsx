@@ -5,8 +5,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
 import Image from 'next/image';
+import { authClient } from '@/lib/auth-client';
 
 export default function Navbar() {
+
+    const userSession = authClient.useSession()
+
+    // console.log(userSession)
+
     const [isOpen, setIsOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const pathname = usePathname();

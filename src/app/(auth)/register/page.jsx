@@ -13,18 +13,19 @@ export default function RegisterPage() {
     const [apiError, setApiError] = useState("");
     const router = useRouter();
 
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    const { register, handleSubmit, watch, formState: { errors } } = useForm({
         defaultValues: {
             role: "user" // Default role
         }
     });
+
+    const selectedImage = watch("imageFile");
 
     const onSubmit = async (data) => {
         setIsLoading(true);
         setApiError("");
 
         try {
-            // ১. Imgbb-তে ইমেজ আপলোড করার মেকানিজম
             let imageUrl = "";
             const imageFile = data.imageFile[0]; // রিয়েক্ট হুক ফর্ম থেকে ফাইল অবজেক্ট নেওয়া
 
@@ -36,7 +37,7 @@ export default function RegisterPage() {
             formData.append("image", imageFile);
 
             // আপনার Imgbb API Key এখানে বসাবেন (অথবা process.env.NEXT_PUBLIC_IMGBB_API_KEY)
-            const IMGBB_API_KEY = "YOUR_IMGBB_API_KEY_HERE";
+            const IMGBB_API_KEY = "d3e4bc27d418ba7d094aa1df32884888";
 
             const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
                 method: "POST",
@@ -46,17 +47,17 @@ export default function RegisterPage() {
             const imgbbData = await imgbbResponse.json();
 
             if (imgbbData.success) {
-                imageUrl = imgbbData.data.display_url; // Imgbb থেকে পাওয়া ডিরেক্ট লিঙ্ক
+                imageUrl = imgbbData.data.display_url; // Imgbb main link
             } else {
                 throw new Error("Image upload failed. Please try again.");
             }
 
-            // ২. Better Auth দিয়ে রেজিস্ট্রেশন (Imgbb থেকে পাওয়া ইউআরএল সহ)
+            // Better Auth signup 
             const { error } = await authClient.signUp.email({
                 email: data.email,
                 password: data.password,
                 name: data.name,
-                image: imageUrl, // এখানে লিঙ্কটি অ্যাসাইন হচ্ছে
+                image: imageUrl,
                 role: data.role
             });
 
@@ -121,7 +122,10 @@ export default function RegisterPage() {
                                 {...register("imageFile", { required: "Profile image is required" })}
                             />
                             <div className="w-full flex items-center justify-between px-3 text-zinc-400 text-xs pointer-events-none">
-                                <span className="truncate">Choose image from device...</span>
+                                {/* 👑 ডাইনামিক টেক্সট মেকানিজম */}
+                                <span className={`truncate ${selectedImage?.[0] ? 'text-zinc-200 font-medium' : 'text-zinc-500'}`}>
+                                    {selectedImage?.[0] ? selectedImage[0].name : "Choose image from device..."}
+                                </span>
                                 <Upload className="h-3.5 w-3.5 text-zinc-500" />
                             </div>
                         </div>
