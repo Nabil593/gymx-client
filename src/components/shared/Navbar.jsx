@@ -73,7 +73,7 @@ export default function Navbar() {
 
                     {/* Desktop Right Action Area */}
                     <div className="hidden md:flex items-center space-x-4">
-                        {user ? (
+                        {!user ? (
                             <div className="relative">
                                 <button
                                     onClick={toggleProfile}
