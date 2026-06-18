@@ -4,12 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Upload } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
-<<<<<<< HEAD
-=======
-// import { authClient } from "@/lib/auth-client";
->>>>>>> ad3999bd2c60772d104398a268f2378031fa1529
 
 export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false);
@@ -19,11 +15,7 @@ export default function RegisterPage() {
 
     const { register, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
-<<<<<<< HEAD
             role: "user" // Default role
-=======
-            role: "user" // ডিফল্ট সিলেক্টেড থাকবে user
->>>>>>> ad3999bd2c60772d104398a268f2378031fa1529
         }
     });
 
@@ -32,30 +24,44 @@ export default function RegisterPage() {
         setApiError("");
 
         try {
-<<<<<<< HEAD
-=======
-            // Better Auth Sign-Up API তে সরাসরি ফর্মের সিলেক্টেড রোল পাস হবে
->>>>>>> ad3999bd2c60772d104398a268f2378031fa1529
-            const { error } = await authClient.signUp.email({
-              email: data.email,
-              password: data.password,
-              name: data.name,
-              image: data.image,
-<<<<<<< HEAD
-              role: data.role
-=======
-              role: data.role // 'user', 'trainer', বা 'admin' সরাসরি যাবে
->>>>>>> ad3999bd2c60772d104398a268f2378031fa1529
+            // ১. Imgbb-তে ইমেজ আপলোড করার মেকানিজম
+            let imageUrl = "";
+            const imageFile = data.imageFile[0]; // রিয়েক্ট হুক ফর্ম থেকে ফাইল অবজেক্ট নেওয়া
+
+            if (!imageFile) {
+                throw new Error("Please select a profile image.");
+            }
+
+            const formData = new FormData();
+            formData.append("image", imageFile);
+
+            // আপনার Imgbb API Key এখানে বসাবেন (অথবা process.env.NEXT_PUBLIC_IMGBB_API_KEY)
+            const IMGBB_API_KEY = "YOUR_IMGBB_API_KEY_HERE";
+
+            const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: "POST",
+                body: formData,
             });
-      
+
+            const imgbbData = await imgbbResponse.json();
+
+            if (imgbbData.success) {
+                imageUrl = imgbbData.data.display_url; // Imgbb থেকে পাওয়া ডিরেক্ট লিঙ্ক
+            } else {
+                throw new Error("Image upload failed. Please try again.");
+            }
+
+            // ২. Better Auth দিয়ে রেজিস্ট্রেশন (Imgbb থেকে পাওয়া ইউআরএল সহ)
+            const { error } = await authClient.signUp.email({
+                email: data.email,
+                password: data.password,
+                name: data.name,
+                image: imageUrl, // এখানে লিঙ্কটি অ্যাসাইন হচ্ছে
+                role: data.role
+            });
+
             if (error) throw new Error(error.message);
 
-<<<<<<< HEAD
-=======
-            console.log("Account Created with Selected Role:", data);
-
-            // রোল অনুযায়ী সরাসরি ড্যাশবোর্ডে পুশ
->>>>>>> ad3999bd2c60772d104398a268f2378031fa1529
             router.push(`/login`);
         } catch (err) {
             setApiError(err.message || "Registration failed. Try again.");
@@ -104,16 +110,22 @@ export default function RegisterPage() {
                         {errors.email && <p className="text-[10px] text-red-400 mt-1">{errors.email.message}</p>}
                     </div>
 
-                    {/* Image URL Field */}
+                    {/* Local Image File Upload Field */}
                     <div className="space-y-1.5 text-left">
-                        <label className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider block">Profile Image URL</label>
-                        <input
-                            type="url"
-                            placeholder="https://example.com/avatar.jpg"
-                            className="w-full h-9 bg-black text-xs px-3 rounded border border-zinc-800 focus:border-zinc-700 text-zinc-200 focus:outline-none transition-colors"
-                            {...register("image", { required: "Image URL is required" })}
-                        />
-                        {errors.image && <p className="text-[10px] text-red-400 mt-1">{errors.image.message}</p>}
+                        <label className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider block">Profile Picture</label>
+                        <div className="relative w-full h-9 bg-black rounded border border-zinc-800 focus-within:border-zinc-700 flex items-center transition-colors">
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                {...register("imageFile", { required: "Profile image is required" })}
+                            />
+                            <div className="w-full flex items-center justify-between px-3 text-zinc-400 text-xs pointer-events-none">
+                                <span className="truncate">Choose image from device...</span>
+                                <Upload className="h-3.5 w-3.5 text-zinc-500" />
+                            </div>
+                        </div>
+                        {errors.imageFile && <p className="text-[10px] text-red-400 mt-1">{errors.imageFile.message}</p>}
                     </div>
 
                     {/* ROLE SELECTOR DROPDOWN */}
