@@ -27,7 +27,7 @@ export default function RegisterPage() {
 
         try {
             let imageUrl = "";
-            const imageFile = data.imageFile[0]; // রিয়েক্ট হুক ফর্ম থেকে ফাইল অবজেক্ট নেওয়া
+            const imageFile = data.imageFile[0];
 
             if (!imageFile) {
                 throw new Error("Please select a profile image.");
@@ -36,7 +36,7 @@ export default function RegisterPage() {
             const formData = new FormData();
             formData.append("image", imageFile);
 
-            // আপনার Imgbb API Key এখানে বসাবেন (অথবা process.env.NEXT_PUBLIC_IMGBB_API_KEY)
+            // Imgbb API Key
             const IMGBB_API_KEY = "d3e4bc27d418ba7d094aa1df32884888";
 
             const imgbbResponse = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
@@ -122,7 +122,6 @@ export default function RegisterPage() {
                                 {...register("imageFile", { required: "Profile image is required" })}
                             />
                             <div className="w-full flex items-center justify-between px-3 text-zinc-400 text-xs pointer-events-none">
-                                {/* 👑 ডাইনামিক টেক্সট মেকানিজম */}
                                 <span className={`truncate ${selectedImage?.[0] ? 'text-zinc-200 font-medium' : 'text-zinc-500'}`}>
                                     {selectedImage?.[0] ? selectedImage[0].name : "Choose image from device..."}
                                 </span>

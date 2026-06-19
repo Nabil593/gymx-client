@@ -1,34 +1,66 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
 import Image from 'next/image';
-import { authClient } from '@/lib/auth-client';
+import { useSession, authClient } from '@/lib/auth-client';
 
 export default function Navbar() {
-
-    const userSession = authClient.useSession()
-
-    // console.log(userSession)
+    const { data: sessionData, isPending, refetch } = useSession();
+    const user = sessionData?.user;
 
     const [isOpen, setIsOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const pathname = usePathname();
+    const router = useRouter();
 
-    // --- Mock Authentication State (Set to null to see Sign In / Sign Up buttons) ---
-    const user = {
-        name: "Shariea Reza",
-        email: "shariea@example.com",
-        photoURL: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=60",
-        role: "admin" // Options: "user" | "trainer" | "admin"
-    };
-    const logout = () => { console.log("Logged out"); };
-    // ------------------------------------------------------------------------------
+    const profileDropdownRef = useRef(null);
 
     const toggleMenu = () => setIsOpen(!isOpen);
     const toggleProfile = () => setIsProfileOpen(!isProfileOpen);
+
+
+    // Handler to close dropdown when clicked outside
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (
+                profileDropdownRef.current &&
+                !profileDropdownRef.current.contains(event.target)
+            ) {
+                setIsProfileOpen(false);
+            }
+        };
+
+        if (isProfileOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isProfileOpen]);
+
+    // BetterAuth- Logout function
+    const handleLogout = async () => {
+        try {
+            await authClient.signOut();
+
+            setIsOpen(false);
+            setIsProfileOpen(false);
+
+            console.log("Logged out successfully");
+
+            await refetch();
+
+            router.push('/login');
+            router.refresh();
+
+        } catch (error) {
+            console.error("Logout failed:", error);
+        }
+    };
 
     // shadcn/ui + X inspired active link styles
     const getLinkClass = (path) => {
@@ -47,9 +79,9 @@ export default function Navbar() {
             <Link href="/community-forum" onClick={() => isMobile && setIsOpen(false)} className={getLinkClass('/community-forum')}>Community Forum</Link>
             {user && (
                 <Link
-                    href={`/dashboard/${user.role}`}
+                    href={`/dashboard/${user.role || 'user'}`}
                     onClick={() => isMobile && setIsOpen(false)}
-                    className={getLinkClass(`/dashboard/${user.role}`)}
+                    className={getLinkClass(`/dashboard/${user.role || 'user'}`)}
                 >
                     Dashboard
                 </Link>
@@ -62,7 +94,7 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-14">
 
-                    {/* Logo Section (X + shadcn aesthetic) */}
+                    {/* Logo Section */}
                     <Link href="/" className="flex items-center space-x-2 font-bold tracking-tight text-lg">
                         <span className="bg-zinc-50 text-black px-1.5 py-0.5 rounded-md font-black tracking-tighter text-sm">
                             G
@@ -79,34 +111,41 @@ export default function Navbar() {
 
                     {/* Desktop Right Action Area */}
                     <div className="hidden md:flex items-center space-x-4">
-                        {!user ? (
-                            <div className="relative">
+                        {isPending ? (
+                            <div className="h-8 w-8 rounded-full bg-zinc-800 animate-pulse" />
+                        ) : user ? (
+                            <div className="relative flex items-center space-x-3" ref={profileDropdownRef}>
+                                <p className="text-sm font-medium text-zinc-300 hidden lg:block select-none">
+                                    {user.name}
+                                </p>
                                 <button
                                     onClick={toggleProfile}
                                     className="flex items-center focus:outline-none focus:ring-1 focus:ring-zinc-700 rounded-full"
                                 >
                                     <Image
                                         className="h-8 w-8 rounded-full object-cover border border-zinc-700 hover:opacity-80 transition-opacity"
-                                        src={user.photoURL}
-                                        alt={user.name}
+                                        src={user.image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=60"}
+                                        alt={user.name || "User"}
                                         width={32}
                                         height={32}
                                     />
                                 </button>
 
-                                {/* Dropdown Menu (shadcn styling architecture) */}
+                                {/* Dropdown Menu */}
                                 {isProfileOpen && (
-                                    <div className="absolute right-0 mt-2 w-56 bg-zinc-950 rounded-md border border-zinc-800 shadow-xl py-1 z-50 text-zinc-200 animate-in fade-in slide-in-from-top-1 duration-100">
+                                    <div className="absolute right-2 top-full mt-2 w-56 bg-zinc-950 rounded-md border border-zinc-800 shadow-xl py-1 z-50 text-zinc-200 animate-in fade-in slide-in-from-top-1 duration-100">
                                         <div className="px-3 py-2 border-b border-zinc-800">
                                             <p className="text-xs font-medium text-zinc-400 truncate">Signed in as</p>
                                             <p className="text-sm font-semibold text-zinc-100 truncate">{user.name}</p>
-                                            <span className="inline-block mt-1 text-[10px] uppercase font-bold tracking-wider bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded">
-                                                {user.role}
-                                            </span>
+                                            {user.role && (
+                                                <span className="inline-block mt-1 text-[10px] uppercase font-bold tracking-wider bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded">
+                                                    {user.role}
+                                                </span>
+                                            )}
                                         </div>
 
                                         <Link
-                                            href={`/dashboard/${user.role}`}
+                                            href={`/dashboard/${user.role || 'user'}`}
                                             onClick={() => setIsProfileOpen(false)}
                                             className="flex items-center space-x-2 px-3 py-2 text-sm hover:bg-zinc-900 transition-colors"
                                         >
@@ -115,7 +154,7 @@ export default function Navbar() {
                                         </Link>
 
                                         <button
-                                            onClick={() => { logout(); setIsProfileOpen(false); }}
+                                            onClick={handleLogout}
                                             className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-red-400 hover:bg-zinc-900/50 transition-colors border-t border-zinc-800 mt-1"
                                         >
                                             <LogOut className="h-4 w-4" />
@@ -142,7 +181,7 @@ export default function Navbar() {
                         )}
                     </div>
 
-                    {/* Mobile Hamburguer Toggle */}
+                    {/* Mobile Hamburger Toggle */}
                     <div className="flex md:hidden items-center">
                         <button
                             onClick={toggleMenu}
@@ -167,32 +206,32 @@ export default function Navbar() {
                             <div className="space-y-4">
                                 <div className="flex items-center space-x-3 px-1">
                                     <Image
-                                        className="h-8 w-8 rounded-full object-cover border border-zinc-700 hover:opacity-80 transition-opacity"
-                                        src={user.photoURL}
-                                        alt={user.name}
+                                        className="h-8 w-8 rounded-full object-cover border border-zinc-700"
+                                        src={user.image || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=60"}
+                                        alt={user.name || "User"}
                                         width={32}
                                         height={32}
                                     />
                                     <div>
                                         <p className="text-sm font-medium text-zinc-200">{user.name}</p>
                                         <span className="text-[10px] uppercase font-bold bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded">
-                                            {user.role}
+                                            {user.role || 'user'}
                                         </span>
                                     </div>
                                 </div>
 
                                 <div className="flex flex-col gap-2">
                                     <Link
-                                        href={`/dashboard/${user.role}`}
+                                        href={`/dashboard/${user.role || 'user'}`}
                                         onClick={() => setIsOpen(false)}
-                                        className="flex items-center justify-center space-x-2 bg-zinc-900 text-zinc-100 py-2.5 rounded-md font-medium text-sm hover:bg-zinc-800 transition-colors border border-zinc-800"
+                                        className="flex items-center justify-center space-x-2 bg-zinc-900 text-zinc-100 py-2.5 rounded-md font-medium text-sm border border-zinc-800"
                                     >
                                         <LayoutDashboard className="h-4 w-4" />
                                         <span>Dashboard Menu</span>
                                     </Link>
                                     <button
-                                        onClick={() => { logout(); setIsOpen(false); }}
-                                        className="flex items-center justify-center space-x-2 bg-zinc-950 text-red-400 py-2.5 rounded-md font-medium text-sm hover:bg-zinc-900 transition-colors border border-zinc-900"
+                                        onClick={handleLogout}
+                                        className="flex items-center justify-center space-x-2 bg-zinc-950 text-red-400 py-2.5 rounded-md font-medium text-sm border border-zinc-900"
                                     >
                                         <LogOut className="h-4 w-4" />
                                         <span>Log Out</span>
@@ -204,7 +243,7 @@ export default function Navbar() {
                                 <Link
                                     href="/login"
                                     onClick={() => setIsOpen(false)}
-                                    className="flex items-center justify-center bg-zinc-900 text-zinc-100 py-2.5 rounded-md font-medium text-sm hover:bg-zinc-800 transition-colors border border-zinc-800"
+                                    className="flex items-center justify-center bg-zinc-900 text-zinc-100 py-2.5 rounded-md font-medium text-sm border border-zinc-800"
                                 >
                                     Sign In
                                 </Link>

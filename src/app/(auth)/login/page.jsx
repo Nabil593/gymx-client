@@ -24,27 +24,45 @@ export default function LoginPage() {
 
         try {
             const { data: session, error } = await authClient.signIn.email({
-              email: data.email,
-              password: data.password,
+                email: data.email,
+                password: data.password,
             });
-      
+
             if (error) throw new Error(error.message);
-      
-            // --- Dynamic role rediraction matrix ---
+
+            router.refresh();
+
             if (callbackUrl) {
-              router.push(callbackUrl);
-            } else {
-              const userRole = session?.user?.role;
-              if (userRole === "admin") router.push("/dashboard/admin");
-              else if (userRole === "trainer") router.push("/dashboard/trainer");
-              else router.push("/dashboard/user");
+                router.push(callbackUrl);
+                return;
             }
 
-            console.log("Logged in with data:", data);
-            router.push("/");
+            const userRole = session?.user?.role;
+            if (userRole === "admin") {
+                router.push("/dashboard/admin");
+            } else if (userRole === "trainer") {
+                router.push("/dashboard/trainer");
+            } else {
+                router.push("/dashboard/user");
+            }
+
         } catch (err) {
             setApiError(err.message || "Invalid credentials. Please try again.");
         } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Google Sign-In
+    const handleGoogleSignIn = async () => {
+        try {
+            setIsLoading(true);
+            await authClient.signIn.social({
+                provider: "google",
+                callbackURL: callbackUrl || "/"
+            });
+        } catch (err) {
+            setApiError("Google Authentication failed. Please try again.");
             setIsLoading(false);
         }
     };
@@ -59,7 +77,7 @@ export default function LoginPage() {
                 </div>
 
                 {apiError && (
-                    <div className="mb-4 p-2.5 bg-red-950/40 border border-red-900 rounded text-xs text-red-400 font-medium">
+                    <div className="mb-4 p-2.5 bg-red-950/40 border border-red-900 rounded text-xs text-red-400 font-medium animate-in fade-in duration-200">
                         {apiError}
                     </div>
                 )}
@@ -99,7 +117,7 @@ export default function LoginPage() {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full bg-zinc-50 hover:bg-zinc-200 text-black h-9 rounded text-xs font-bold flex items-center justify-center transition-colors mt-2 cursor-pointer"
+                        className="w-full bg-zinc-50 hover:bg-zinc-200 text-black h-9 rounded text-xs font-bold flex items-center justify-center transition-colors mt-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Sign In with Credentials"}
                     </button>
@@ -112,7 +130,9 @@ export default function LoginPage() {
 
                 <button
                     type="button"
-                    className="w-full bg-black hover:bg-zinc-900 border border-zinc-800 text-zinc-200 h-9 rounded text-xs font-semibold flex items-center justify-center transition-colors gap-2 cursor-pointer"
+                    onClick={handleGoogleSignIn}
+                    disabled={isLoading}
+                    className="w-full bg-black hover:bg-zinc-900 border border-zinc-800 text-zinc-200 h-9 rounded text-xs font-semibold flex items-center justify-center transition-colors gap-2 cursor-pointer disabled:opacity-50"
                 >
                     <svg className="h-3.5 w-3.5" viewBox="0 0 24 24">
                         <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
