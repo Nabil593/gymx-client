@@ -23,27 +23,30 @@ export default function LoginPage() {
         setApiError("");
 
         try {
-            const { data: session, error } = await authClient.signIn.email({
+            const { data: resData, error } = await authClient.signIn.email({
                 email: data.email,
                 password: data.password,
             });
 
             if (error) throw new Error(error.message);
 
+            const sessionState = await authClient.getSession();
+            const userRole = sessionState?.data?.user?.role || "user";
+
             router.refresh();
 
+            // Conditional dynamic routing
             if (callbackUrl) {
                 router.push(callbackUrl);
                 return;
             }
 
-            const userRole = session?.user?.role;
             if (userRole === "admin") {
-                router.push("/dashboard/admin");
+                router.push("/dashboard/admin/overview");
             } else if (userRole === "trainer") {
-                router.push("/dashboard/trainer");
+                router.push("/dashboard/trainer/overview");
             } else {
-                router.push("/dashboard/user");
+                router.push("/dashboard/user/overview");
             }
 
         } catch (err) {
@@ -59,7 +62,7 @@ export default function LoginPage() {
             setIsLoading(true);
             await authClient.signIn.social({
                 provider: "google",
-                callbackURL: callbackUrl || "/"
+                callbackURL: callbackUrl,
             });
         } catch (err) {
             setApiError("Google Authentication failed. Please try again.");

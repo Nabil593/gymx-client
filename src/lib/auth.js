@@ -18,7 +18,7 @@ export const auth = betterAuth({
       role: {
         type: "string",
         required: false,
-        defaultValue: "user", // ফ্রন্টএন্ড থেকে না পাঠালেও স্বয়ংক্রিয়ভাবে 'user' সেট হবে
+        defaultValue: "user",
       },
     },
   },

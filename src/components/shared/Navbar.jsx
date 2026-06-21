@@ -50,8 +50,6 @@ export default function Navbar() {
             setIsOpen(false);
             setIsProfileOpen(false);
 
-            console.log("Logged out successfully");
-
             await refetch();
 
             router.push('/login');
@@ -75,11 +73,11 @@ export default function Navbar() {
     const renderNavLinks = (isMobile = false) => (
         <>
             <Link href="/" onClick={() => isMobile && setIsOpen(false)} className={getLinkClass('/')}>Home</Link>
-            <Link href="/all-classes" onClick={() => isMobile && setIsOpen(false)} className={getLinkClass('/all-classes')}>All Classes</Link>
-            <Link href="/community-forum" onClick={() => isMobile && setIsOpen(false)} className={getLinkClass('/community-forum')}>Community Forum</Link>
+            <Link href="/classes" onClick={() => isMobile && setIsOpen(false)} className={getLinkClass('/all-classes')}>All Classes</Link>
+            <Link href="/forum" onClick={() => isMobile && setIsOpen(false)} className={getLinkClass('/community-forum')}>Community Forum</Link>
             {user && (
                 <Link
-                    href={`/dashboard/${user.role || 'user'}`}
+                    href={`/dashboard/${user.role || 'user'}/overview`}
                     onClick={() => isMobile && setIsOpen(false)}
                     className={getLinkClass(`/dashboard/${user.role || 'user'}`)}
                 >
