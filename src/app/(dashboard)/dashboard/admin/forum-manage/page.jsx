@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { Loader2, Trash2, Inbox, Calendar, User, MessageSquare, ThumbsUp, ThumbsDown } from 'lucide-react';
-import Image from 'next/image';
 
 const ForumManagePage = () => {
     const [posts, setPosts] = useState([]);
@@ -112,10 +111,10 @@ const ForumManagePage = () => {
                                             <td className="p-4 max-w-[240px]">
                                                 <div className="flex items-center gap-3">
                                                     {post.image && (
-                                                        <Image
+                                                        // eslint-disable-next-line @next/next/no-img-element
+                                                        <img
                                                             src={post.image}
                                                             alt="Cover"
-                                                            fill
                                                             className="w-10 h-10 object-cover rounded bg-zinc-900 border border-zinc-800 flex-shrink-0"
                                                         />
                                                     )}
