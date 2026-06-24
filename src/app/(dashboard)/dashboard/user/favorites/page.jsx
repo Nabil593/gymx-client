@@ -41,13 +41,19 @@ const FavoritesPage = () => {
     // Remove From Favorites Handler
     const handleRemoveFavorite = async (classId) => {
         try {
-            const response = await fetch(`${baseUrl}/api/favorites?userEmail=${userEmail}&classId=${classId}`, {
-                method: 'DELETE'
+            const res = await fetch(`http://localhost:5000/api/favorites?email=${userEmail}&classId=${classId}`, {
+                method: "DELETE"
             });
-            const data = await response.json();
+
+            // 🛠️ ফিক্স: 'response' বদলে 'res' করা হয়েছে
+            const data = await res.json();
 
             if (data.success) {
+                // স্টেট থেকে রিয়েল-টাইমে রিমুভ করা
                 setFavorites(prev => prev.filter(item => item.classId !== classId));
+
+                // যদি পেজে আলাদা কোনো 'isFavorite' স্টেট থাকে, সেটাকেও এখানে false করে দিতে পারেন
+                // setIsFavorite(false); 
             } else {
                 alert(data.message || "Failed to remove.");
             }

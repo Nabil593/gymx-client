@@ -127,7 +127,7 @@ const ManageUsersPage = () => {
                                                 </div>
                                             </td>
 
-                                            {/* 👑 Role Badge Fixed & Updated */}
+                                            {/* Role Badge */}
                                             <td className="p-4">
                                                 {userRole === 'admin' ? (
                                                     <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded text-[10px] font-bold uppercase tracking-wide">
@@ -158,29 +158,34 @@ const ManageUsersPage = () => {
                                             </td>
 
                                             {/* Actions */}
-                                            <td className="p-4 text-right space-x-2">
-                                                {/* Block/Unblock Button */}
-                                                <button
-                                                    disabled={actionLoadingId === item._id}
-                                                    onClick={() => handleToggleBlock(item._id, item.status || 'Active')}
-                                                    className={`inline-flex items-center gap-1 px-2.5 py-1.5 border rounded-lg font-semibold transition-colors disabled:opacity-50 ${item.status === 'Blocked'
-                                                        ? 'bg-zinc-900 hover:bg-zinc-800 border-zinc-800 text-zinc-300'
-                                                        : 'bg-zinc-900 hover:bg-amber-950/20 border-zinc-800 hover:border-amber-900/50 text-zinc-400 hover:text-amber-400'
-                                                        }`}
-                                                >
-                                                    <UserX className="h-3 w-3" />
-                                                    {item.status === 'Blocked' ? 'Unblock' : 'Block'}
-                                                </button>
+                                            <td className="p-4 text-right space-x-2 whitespace-nowrap min-h-[40px]">
+                                                {/* অ্যাকশন লোডিং স্টেট হ্যান্ডেল করার জন্য লজিক */}
+                                                {actionLoadingId === item._id ? (
+                                                    <span className="inline-flex items-center text-zinc-500 text-[11px] pr-4">
+                                                        <Loader2 className="h-3 w-3 animate-spin mr-1" /> Updating...
+                                                    </span>
+                                                ) : (
+                                                    <>
+                                                        {/* 🚫 BLOCK BUTTON CONDITIONAL RENDERING */}
+                                                        {userRole !== 'admin' && (
+                                                            <button
+                                                                onClick={() => handleToggleBlock(item._id, item.status)}
+                                                                className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-400 rounded-lg transition-colors"
+                                                            >
+                                                                {item.status === 'Blocked' ? 'Unblock' : 'Block'}
+                                                            </button>
+                                                        )}
 
-                                                {/* Make Admin Button (Only if not already Admin) */}
-                                                {userRole !== 'admin' && (
-                                                    <button
-                                                        disabled={actionLoadingId === item._id}
-                                                        onClick={() => handleMakeAdmin(item._id)}
-                                                        className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-zinc-100 hover:bg-zinc-200 text-black font-semibold rounded-lg transition-colors disabled:opacity-50"
-                                                    >
-                                                        <ShieldAlert className="h-3 w-3" /> Make Admin
-                                                    </button>
+                                                        {/* 🛡️ MAKE ADMIN BUTTON CONDITIONAL RENDERING */}
+                                                        {userRole !== 'admin' && (
+                                                            <button
+                                                                onClick={() => handleMakeAdmin(item._id)}
+                                                                className="inline-flex items-center gap-1 px-2.5 py-1.5 bg-zinc-100 hover:bg-zinc-200 text-black font-semibold rounded-lg transition-colors"
+                                                            >
+                                                                Make Admin
+                                                            </button>
+                                                        )}
+                                                    </>
                                                 )}
                                             </td>
                                         </tr>
