@@ -10,7 +10,7 @@ const ForumManagePage = () => {
 
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-    // 🔄 Fetch All Community Forum Posts
+    // Fetch All Community Forum Posts
     const fetchPosts = useCallback(async () => {
         try {
             const response = await fetch(`${baseUrl}/api/admin/forums`);
@@ -26,12 +26,11 @@ const ForumManagePage = () => {
     }, [baseUrl]);
 
     useEffect(() => {
-        posts;
         // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchPosts();
     }, [fetchPosts]);
 
-    // 🗑️ Handle Delete Forum Post
+    // Handle Delete Forum Post
     const handleDeletePost = async (id) => {
         if (!confirm("Are you sure you want to delete this community post permanently? This action cannot be undone.")) return;
 
@@ -68,7 +67,7 @@ const ForumManagePage = () => {
                 <p className="text-xs text-zinc-500 mt-0.5">Moderate community contributions, review user discussions, or delete inappropriate content.</p>
             </div>
 
-            {/* 📊 Forum Posts Table */}
+            {/* Forum Posts Table */}
             {posts.length === 0 ? (
                 <div className="bg-zinc-950 border border-zinc-900 rounded-xl p-12 flex flex-col items-center justify-center text-center space-y-3">
                     <div className="p-3 bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-500">
@@ -101,8 +100,8 @@ const ForumManagePage = () => {
                                         day: 'numeric'
                                     }) : "N/A";
 
-                                    const upvotesCount = post.upvotes || post.likes || 0;
-                                    const downvotesCount = post.downvotes || post.dislikes || 0;
+                                    const upvotesCount = post.upVotes?.length || post.upvotes?.length || post.likes || 0;
+                                    const downvotesCount = post.downVotes?.length || post.downvotes?.length || post.dislikes || 0;
 
                                     return (
                                         <tr key={post._id} className="hover:bg-zinc-900/10 transition-colors">
@@ -133,7 +132,7 @@ const ForumManagePage = () => {
                                             <td className="p-4">
                                                 <div className="flex flex-col">
                                                     <span className="font-medium text-zinc-300 flex items-center gap-1">
-                                                        <User className="h-3 w-3 text-zinc-600" /> {post.authorName || "Anonymous"}
+                                                        <User className="h-3 w-3 text-zinc-600" /> {post.authorName || post.author || "Anonymous"}
                                                     </span>
                                                     <span className="text-[10px] text-zinc-500 mt-0.5">
                                                         {post.authorEmail || post.authorRole || "User"}
