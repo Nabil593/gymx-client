@@ -1,5 +1,6 @@
 import Footer from '@/components/shared/Footer';
 import Navbar from '@/components/shared/Navbar';
+import { Toaster } from '@/components/ui/sonner';
 import React from 'react';
 
 const MainLayout = ({ children }) => {
@@ -8,6 +9,7 @@ const MainLayout = ({ children }) => {
             <Navbar />
             <main className="flex-1">
                 {children}
+                <Toaster />
             </main>
             <Footer />
         </div>

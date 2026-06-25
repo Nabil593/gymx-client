@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Sidebar from "@/components/dashboard/Sidebar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import { Toaster } from '@/components/ui/sonner';
 
 export default function DashboardLayout({ children }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -20,6 +21,7 @@ export default function DashboardLayout({ children }) {
                 <DashboardHeader onMenuClick={() => setIsSidebarOpen(true)} />
                 <main className="flex-1 overflow-y-auto bg-black p-4 sm:p-6 md:p-8">
                     {children}
+                    <Toaster />
                 </main>
             </div>
 
