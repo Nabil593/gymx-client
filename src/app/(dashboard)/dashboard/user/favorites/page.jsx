@@ -41,7 +41,7 @@ const FavoritesPage = () => {
     // Remove From Favorites Handler
     const handleRemoveFavorite = async (classId) => {
         try {
-            const res = await fetch(`http://localhost:5000/api/favorites?email=${userEmail}&classId=${classId}`, {
+            const res = await fetch(`baseUrl/api/favorites?email=${userEmail}&classId=${classId}`, {
                 method: "DELETE"
             });
 
