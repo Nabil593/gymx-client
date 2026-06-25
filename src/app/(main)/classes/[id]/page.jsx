@@ -20,43 +20,32 @@ const ClassDetailsPage = () => {
     const [isFavorite, setIsFavorite] = useState(false);
 
     useEffect(() => {
-        const fetchDetailsAndValidations = async () => {
+        const fetchAllData = async () => {
+            if (!id) return;
             setLoading(true);
             try {
                 const res = await fetch(`http://localhost:5000/api/classes/${id}`);
-                const contentType = res.headers.get("content-type");
-                if (contentType && contentType.includes("application/json")) {
-                    const data = await res.json();
-                    if (data.success) {
-                        setClassData(data.classData);
-                    }
+                const data = await res.json();
+                if (data) setClassData(data.classData || data);
+
+                if (userEmail) {
+                    const bookingRes = await fetch(`http://localhost:5000/api/check-booked?email=${encodeURIComponent(userEmail)}&classId=${id}`);
+                    const bookingData = await bookingRes.json();
+                    setIsBooked(!!(bookingData.isBooked || bookingData.hasBooked));
+
+                    const favRes = await fetch(`http://localhost:5000/api/check-favorite?email=${encodeURIComponent(userEmail)}&classId=${id}`);
+                    const favData = await favRes.json();
+                    setIsFavorite(!!favData.isFav);
                 }
-
-                if (userEmail && userRole === 'user') {
-                    // Booking Validation Check
-                    const bookingRes = await fetch(`http://localhost:5000/api/check-booking?email=${userEmail}&classId=${id}`);
-                    if (bookingRes.ok && bookingRes.headers.get("content-type")?.includes("application/json")) {
-                        const bookingData = await bookingRes.json();
-                        if (bookingData.hasBooked) setIsBooked(true);
-                    }
-
-                    // Favorite Validation Check
-                    const favRes = await fetch(`http://localhost:5000/api/check-favorite?email=${userEmail}&classId=${id}`);
-                    if (favRes.ok && favRes.headers.get("content-type")?.includes("application/json")) {
-                        const favData = await favRes.json();
-                        if (favData.isFav) setIsFavorite(true);
-                    }
-                }
-
             } catch (error) {
-                console.error("Error fetching class details:", error);
+                console.error("Fetch Error:", error);
             } finally {
                 setLoading(false);
             }
         };
 
-        if (id) fetchDetailsAndValidations();
-    }, [id, userEmail, userRole]);
+        if (!isPending) fetchAllData();
+    }, [id, userEmail, isPending]);
 
     const handleBooking = () => {
         if (isBooked) {
@@ -81,7 +70,6 @@ const ClassDetailsPage = () => {
                 })
             });
             const data = await res.json();
-
             if (data.success) {
                 setIsFavorite(true);
                 alert("Successfully added to your favorites!");
@@ -112,8 +100,6 @@ const ClassDetailsPage = () => {
     return (
         <div className="min-h-screen bg-[#09090b] text-[#fafafa] py-12 px-4 font-sans antialiased">
             <div className="max-w-4xl mx-auto">
-
-                {/* Back Button */}
                 <div className="mb-6">
                     <button
                         onClick={() => router.push('/classes')}
@@ -124,15 +110,9 @@ const ClassDetailsPage = () => {
                     </button>
                 </div>
 
-                {/* Main Details Card */}
                 <div className="bg-[#18181b] border border-[#27272a] rounded-xl overflow-hidden shadow-2xl">
-
                     <div className="h-64 md:h-96 w-full relative">
-                        <img
-                            src={classData.image}
-                            alt={classData.className}
-                            className="w-full h-full object-cover opacity-90"
-                        />
+                        <img src={classData.image} alt={classData.className} className="w-full h-full object-cover opacity-90" />
                         <span className="absolute top-4 right-4 bg-[#09090b]/80 border border-[#27272a] text-xs font-medium px-3 py-1 rounded-md backdrop-blur-md">
                             {classData.category}
                         </span>
@@ -141,9 +121,7 @@ const ClassDetailsPage = () => {
                     <div className="p-6 md:p-8">
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                             <div>
-                                <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white mb-1">
-                                    {classData.className}
-                                </h1>
+                                <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white mb-1">{classData.className}</h1>
                                 <p className="text-sm text-emerald-500">
                                     Guided by <span className="font-semibold text-emerald-400">{classData.trainerName}</span>
                                 </p>
@@ -155,59 +133,41 @@ const ClassDetailsPage = () => {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#09090b] p-4 rounded-lg border border-[#27272a] mb-6 text-sm text-[#a1a1aa]">
-                            <div>
-                                <span className="text-white font-medium">Duration:</span> {classData.duration}
-                            </div>
-                            <div>
-                                <span className="text-white font-medium">Level:</span> {classData.difficultyLevel || "All Levels"}
-                            </div>
+                            <div><span className="text-white font-medium">Duration:</span> {classData.duration}</div>
+                            <div><span className="text-white font-medium">Level:</span> {classData.difficultyLevel || "All Levels"}</div>
                             <div className="md:col-span-2">
                                 <span className="text-white font-medium">Schedule:</span>{" "}
-                                {classData.classSchedule && typeof classData.classSchedule === 'object' ? (
+                                {classData.classSchedule && typeof classData.classSchedule === 'object' ?
                                     `${classData.classSchedule.days || ''} (${classData.classSchedule.time || ''})`
-                                ) : (
-                                    classData.classSchedule || "Flexible"
-                                )}
+                                    : classData.classSchedule || "Flexible"}
                             </div>
                         </div>
 
                         <h3 className="text-lg font-semibold text-white mb-2">Program Overview</h3>
-                        <p className="text-[#a1a1aa] text-sm leading-relaxed mb-8">
-                            {classData.description}
-                        </p>
+                        <p className="text-[#a1a1aa] text-sm leading-relaxed mb-8">{classData.description}</p>
 
-                        {/* Action Button Rendaring */}
                         {userRole === 'user' ? (
                             <div className="flex flex-col sm:flex-row gap-4 border-t border-[#27272a] pt-6">
                                 <button
                                     onClick={handleBooking}
                                     disabled={isBooked}
-                                    className={`flex-1 text-center py-3 text-sm font-semibold rounded-lg transition-all duration-200 ${isBooked
-                                        ? 'bg-[#27272a] border border-[#3f3f46] text-[#71717a] cursor-not-allowed'
-                                        : 'bg-[#fafafa] hover:bg-[#e4e4e7] text-[#09090b]'
-                                        }`}
+                                    className={`flex-1 text-center py-3 text-sm font-semibold rounded-lg transition-all duration-200 ${isBooked ? 'bg-[#27272a] border border-[#3f3f46] text-[#71717a] cursor-not-allowed' : 'bg-[#fafafa] hover:bg-[#e4e4e7] text-[#09090b]'}`}
                                 >
                                     {isBooked ? 'Already Booked' : 'Book Now'}
                                 </button>
-
                                 <button
                                     onClick={handleFavorite}
                                     disabled={isFavorite}
-                                    className={`px-6 py-3 text-sm font-medium rounded-lg border transition-all duration-200 ${isFavorite
-                                        ? 'bg-[#09090b] border-[#27272a] text-emerald-500 cursor-not-allowed'
-                                        : 'bg-[#27272a] border border-[#3f3f46] hover:border-[#52525b] text-[#e4e4e7]'
-                                        }`}
+                                    className={`px-6 py-3 text-sm font-medium rounded-lg border transition-all duration-200 ${isFavorite ? 'bg-[#09090b] border-[#27272a] text-emerald-500 cursor-not-allowed' : 'bg-[#27272a] border border-[#3f3f46] hover:border-[#52525b] text-[#e4e4e7]'}`}
                                 >
                                     {isFavorite ? '✓ Saved to Favorites' : 'Add to Favorites'}
                                 </button>
                             </div>
                         ) : (
-                            /* Notification for Admin & Trainer */
                             <div className="mt-6 p-4 bg-[#27272a]/40 border border-[#3f3f46] text-[#a1a1aa] text-xs rounded-lg text-center backdrop-blur-sm">
                                 Booking and Favorite features are exclusively available for trainees. You are logged in as an <span className="text-emerald-400 font-semibold capitalize">{userRole}</span>.
                             </div>
                         )}
-
                     </div>
                 </div>
             </div>

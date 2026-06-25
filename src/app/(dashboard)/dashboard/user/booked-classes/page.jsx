@@ -37,10 +37,13 @@ const BookedClassesPage = () => {
         }
     }, [userEmail, fetchBookedClasses]);
 
-    // 🔍 View Details Click Handler
+    // View Details Click Handler
     const handleViewDetails = (booking) => {
-        alert(`Class: ${booking.bookedClassName}\nTrainer: ${booking.trainerName || 'N/A'}\nStatus: Paid & Confirmed`);
-        // If I want to do modal or dynamic routing in the future, I can write the logic here.
+
+        const className = booking.bookedClassName || booking.className || "Unnamed Class";
+        const trainer = booking.trainerName || 'N/A';
+
+        alert(`Class: ${className}\nTrainer: ${trainer}\nStatus: Paid & Confirmed`);
     };
 
     if (isLoading) {
@@ -88,7 +91,7 @@ const BookedClassesPage = () => {
                                     <tr key={booking._id} className="hover:bg-zinc-900/10 transition-colors">
                                         {/* Class Name */}
                                         <td className="p-4 font-semibold text-zinc-100">
-                                            {booking.bookedClassName || "Unnamed Class"}
+                                            {booking.className || "Unnamed Class"}
                                         </td>
 
                                         {/* Trainer Name */}
@@ -104,11 +107,13 @@ const BookedClassesPage = () => {
                                             <div className="flex flex-col gap-0.5">
                                                 <span className="flex items-center gap-1 text-zinc-300 font-medium">
                                                     <Calendar className="h-3 w-3 text-zinc-500" />
-                                                    {booking.classSchedule?.day || booking.slotDay || "Flexible Day"}
+                                                    {/* চেক করা হচ্ছে ডাটা আছে কিনা */}
+                                                    {booking.classSchedule?.days ? booking.classSchedule.days[0] :
+                                                        booking.classSchedule?.day ? booking.classSchedule.day : "Flexible Day"}
                                                 </span>
                                                 <span className="flex items-center gap-1 text-zinc-500 text-[10px]">
                                                     <Clock className="h-2.5 w-2.5" />
-                                                    {booking.classSchedule?.time || booking.slotTime || "Standard Time"}
+                                                    {booking.classSchedule?.time || "Standard Time"}
                                                 </span>
                                             </div>
                                         </td>

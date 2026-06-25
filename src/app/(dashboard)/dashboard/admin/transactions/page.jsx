@@ -30,7 +30,7 @@ const TransactionsPage = () => {
         fetchTransactions();
     }, [fetchTransactions]);
 
-    // 📋 Handle Copy Transaction ID to Clipboard
+    // Handle Copy Transaction ID to Clipboard
     const handleCopy = (id) => {
         navigator.clipboard.writeText(id);
         setCopiedId(id);
@@ -80,7 +80,7 @@ const TransactionsPage = () => {
                             <tbody className="text-xs divide-y divide-zinc-900">
                                 {transactions.map((tx) => {
                                     const txId = tx.transactionId || tx.txId || "N/A";
-                                    const rawDate = tx.date || tx.createdAt;
+                                    const rawDate = tx.bookingDate || tx.date || tx.createdAt;
                                     const formattedDate = rawDate ? new Date(rawDate).toLocaleDateString('en-US', {
                                         year: 'numeric',
                                         month: 'short',
