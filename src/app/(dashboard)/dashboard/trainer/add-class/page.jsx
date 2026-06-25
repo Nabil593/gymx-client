@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useSession } from '@/lib/auth-client';
 import { Loader2, PlusCircle, AlignLeft, DollarSign, Clock, Layers, Award, Upload, Type, Calendar } from 'lucide-react';
+import { toast } from 'sonner';
 
 const AddClassPage = () => {
     const { data: sessionData } = useSession();
@@ -32,11 +33,11 @@ const AddClassPage = () => {
             if (data.success) {
                 setImageUrl(data.data.display_url); // Save Imgbb live link
             } else {
-                alert("Image upload failed. Try again.");
+                toast.error("Image upload failed. Try again.");
             }
         } catch (error) {
             console.error("Imgbb Upload Error:", error);
-            alert("Error uploading image.");
+            toast.error("Error uploading image.");
         } finally {
             setUploadingImage(false);
         }
@@ -46,7 +47,7 @@ const AddClassPage = () => {
         e.preventDefault();
 
         if (!imageUrl) {
-            alert("Please upload a class image first!");
+            toast.warning("Please upload a class image first!");
             return;
         }
 
@@ -91,13 +92,13 @@ const AddClassPage = () => {
 
             const data = await response.json();
             if (data.success) {
-                alert("✨ Class submitted successfully! Waiting for Admin approval.");
+                toast.success("✨ Class submitted successfully! Waiting for Admin approval.");
                 form.reset();
                 setImageUrl("");
             }
         } catch (error) {
             console.error("Error adding class:", error);
-            alert("Something went wrong. Please try again.");
+            toast.error("Something went wrong. Please try again.");
         } finally {
             setIsLoading(false);
         }

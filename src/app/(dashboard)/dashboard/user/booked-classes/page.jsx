@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useSession } from '@/lib/auth-client';
 import { Loader2, Calendar, User, Eye, Inbox, Clock } from 'lucide-react';
+import { toast } from 'sonner';
 
 const BookedClassesPage = () => {
     const { data: sessionData } = useSession();
@@ -43,7 +44,7 @@ const BookedClassesPage = () => {
         const className = booking.bookedClassName || booking.className || "Unnamed Class";
         const trainer = booking.trainerName || 'N/A';
 
-        alert(`Class: ${className}\nTrainer: ${trainer}\nStatus: Paid & Confirmed`);
+        toast.success(`Class: ${className}\nTrainer: ${trainer}\nStatus: Paid & Confirmed`);
     };
 
     if (isLoading) {

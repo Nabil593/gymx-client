@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from '@/lib/auth-client';
+import { toast } from 'sonner';
 
 const ClassDetailsPage = () => {
     const { id } = useParams();
@@ -49,7 +50,7 @@ const ClassDetailsPage = () => {
 
     const handleBooking = () => {
         if (isBooked) {
-            alert("You have already booked this class");
+            toast.info("You have already booked this class");
             return;
         }
         router.push(`/payment?classId=${id}&price=${classData?.price}`);
@@ -72,12 +73,12 @@ const ClassDetailsPage = () => {
             const data = await res.json();
             if (data.success) {
                 setIsFavorite(true);
-                alert("Successfully added to your favorites!");
+                toast.success("Successfully added to your favorites!");
             } else {
-                alert(data.message || "Failed to add to favorites");
+                toast.error(data.message || "Failed to add to favorites");
             }
         } catch (error) {
-            alert("Something went wrong. Please check your backend API.");
+            toast.error("Something went wrong. Please check your backend API.");
         }
     };
 

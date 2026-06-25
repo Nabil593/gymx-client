@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSession } from '@/lib/auth-client';
 import { Loader2, Edit3, Trash2, Users, X, Layers, Clock, DollarSign } from 'lucide-react';
+import { toast } from 'sonner';
 
 const MyClassesPage = () => {
     const { data: sessionData } = useSession();
@@ -53,14 +54,14 @@ const MyClassesPage = () => {
 
     // Class Delete handler
     const handleDelete = async (id) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this class?");
+        const confirmDelete = toast.success("Deleted this class");
         if (!confirmDelete) return;
 
         try {
             const response = await fetch(`${baseUrl}/api/classes/${id}`, { method: 'DELETE' });
             const data = await response.json();
             if (data.success) {
-                alert("Class deleted successfully.");
+                toast.success("Class deleted successfully.");
                 setClasses(classes.filter(c => c._id !== id));
             }
         } catch (error) {
@@ -108,7 +109,7 @@ const MyClassesPage = () => {
             });
             const data = await response.json();
             if (data.success) {
-                alert("Class updated successfully!");
+                toast.success("Class updated successfully!");
                 setEditingClass(null);
                 fetchMyClasses();
             }

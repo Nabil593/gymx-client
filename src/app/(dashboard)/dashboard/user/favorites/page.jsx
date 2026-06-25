@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useSession } from '@/lib/auth-client';
 import { Loader2, Heart, HeartOff, Dumbbell } from 'lucide-react';
 import Image from 'next/image';
+import { toast } from 'sonner';
 
 const FavoritesPage = () => {
     const { data: sessionData } = useSession();
@@ -41,7 +42,7 @@ const FavoritesPage = () => {
     // Remove From Favorites Handler
     const handleRemoveFavorite = async (classId) => {
         try {
-            const res = await fetch(`baseUrl/api/favorites?email=${userEmail}&classId=${classId}`, {
+            const res = await fetch(`${baseUrl}/api/favorites?email=${userEmail}&classId=${classId}`, {
                 method: "DELETE"
             });
 
@@ -55,11 +56,11 @@ const FavoritesPage = () => {
                 // যদি পেজে আলাদা কোনো 'isFavorite' স্টেট থাকে, সেটাকেও এখানে false করে দিতে পারেন
                 // setIsFavorite(false); 
             } else {
-                alert(data.message || "Failed to remove.");
+                toast.error(data.message || "Failed to remove.");
             }
         } catch (error) {
             console.error("Error removing favorite:", error);
-            alert("Something went wrong. Try again.");
+            toast.error("Something went wrong. Try again.");
         }
     };
 

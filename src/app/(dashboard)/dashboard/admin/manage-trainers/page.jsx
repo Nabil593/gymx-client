@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { Loader2, UserMinus, ShieldAlert, Inbox, Mail, Star } from 'lucide-react';
+import { toast } from 'sonner';
 
 const ManageTrainersPage = () => {
     const [trainers, setTrainers] = useState([]);
@@ -32,7 +33,7 @@ const ManageTrainersPage = () => {
 
     // 📉 Handle Demote Trainer
     const handleDemote = async (email, name) => {
-        const confirmDemote = window.confirm(`Are you absolutely sure you want to strip trainer privileges from ${name || 'this trainer'}?`);
+        const confirmDemote = toast.success(`Demote from ${name || 'this trainer'}?`);
         if (!confirmDemote) return;
 
         setActionLoadingEmail(email);
@@ -45,11 +46,10 @@ const ManageTrainersPage = () => {
             if (data.success) {
                 setTrainers(prev => prev.filter(trainer => trainer.email !== email));
             } else {
-                alert(data.message || "Failed to demote trainer.");
+                toast.error(data.message || "Failed to demote trainer.");
             }
         } catch (error) {
-            console.error("Error demoting trainer:", error);
-            alert("Something went wrong. Try again.");
+            toast.error("Something went wrong. Try again.");
         } finally {
             setActionLoadingEmail(null);
         }

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { Loader2, CheckCircle2, XCircle, Trash2, Inbox, Calendar, User } from 'lucide-react';
+import { toast } from 'sonner';
 
 const ManageClassesPage = () => {
     const [classes, setClasses] = useState([]);
@@ -34,17 +35,14 @@ const ManageClassesPage = () => {
     const handleApproveClass = async (id) => {
         setActionLoadingId(id);
         try {
-            const response = await fetch(`${baseUrl}/api/admin/classes/approve/${id}`, {
-                method: 'PATCH'
-            });
+            const response = await fetch(`${baseUrl}/api/admin/classes/approve/${id}`, { method: 'PATCH' });
             const data = await response.json();
             if (data.success) {
-                setClasses(prev => prev.map(cls =>
-                    cls._id === id ? { ...cls, status: 'Approved' } : cls
-                ));
+                setClasses(prev => prev.map(cls => cls._id === id ? { ...cls, status: 'Approved' } : cls));
+                toast.success("Class approved successfully!"); // এখানে টোস্ট
             }
         } catch (error) {
-            console.error("Error approving class:", error);
+            toast.error("Failed to approve class.");
         } finally {
             setActionLoadingId(null);
         }
@@ -54,17 +52,14 @@ const ManageClassesPage = () => {
     const handleRejectClass = async (id) => {
         setActionLoadingId(id);
         try {
-            const response = await fetch(`${baseUrl}/api/admin/classes/reject/${id}`, {
-                method: 'PATCH'
-            });
+            const response = await fetch(`${baseUrl}/api/admin/classes/reject/${id}`, { method: 'PATCH' });
             const data = await response.json();
             if (data.success) {
-                setClasses(prev => prev.map(cls =>
-                    cls._id === id ? { ...cls, status: 'Rejected' } : cls
-                ));
+                setClasses(prev => prev.map(cls => cls._id === id ? { ...cls, status: 'Rejected' } : cls));
+                toast.info("Class has been rejected."); // info ব্যবহার করা ভালো
             }
         } catch (error) {
-            console.error("Error rejecting class:", error);
+            toast.error("Error rejecting the class.");
         } finally {
             setActionLoadingId(null);
         }
@@ -72,19 +67,17 @@ const ManageClassesPage = () => {
 
     // Handle Delete Class
     const handleDeleteClass = async (id) => {
-        if (!confirm("Are you sure you want to delete this class permanently?")) return;
 
         setActionLoadingId(id);
         try {
-            const response = await fetch(`${baseUrl}/api/admin/classes/delete/${id}`, {
-                method: 'DELETE'
-            });
+            const response = await fetch(`${baseUrl}/api/admin/classes/delete/${id}`, { method: 'DELETE' });
             const data = await response.json();
             if (data.success) {
                 setClasses(prev => prev.filter(cls => cls._id !== id));
+                toast.success("Class deleted permanently!"); // সাকসেস মেসেজ
             }
         } catch (error) {
-            console.error("Error deleting class:", error);
+            toast.error("Failed to delete the class.");
         } finally {
             setActionLoadingId(null);
         }

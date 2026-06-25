@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useSession } from '@/lib/auth-client';
 import { Loader2, FilePlus, AlignLeft, Upload, Type, ShieldCheck } from 'lucide-react';
+import { toast } from 'sonner';
 
 const AddForumPostPage = () => {
     const { data: sessionData } = useSession();
@@ -32,11 +33,11 @@ const AddForumPostPage = () => {
             if (data.success) {
                 setImageUrl(data.data.display_url); // Save Imgbb live link
             } else {
-                alert("Image upload failed. Please try again.");
+                toast.error("Image upload failed. Please try again.");
             }
         } catch (error) {
             console.error("Imgbb Upload Error:", error);
-            alert("Error uploading image.");
+            toast.error("Error uploading image.");
         } finally {
             setUploadingImage(false);
         }
@@ -46,7 +47,7 @@ const AddForumPostPage = () => {
         e.preventDefault();
 
         if (!imageUrl) {
-            alert("Please upload a cover image for the post!");
+            toast.warning("Please upload a cover image for the post!");
             return;
         }
 
@@ -78,13 +79,13 @@ const AddForumPostPage = () => {
 
             const data = await response.json();
             if (data.success) {
-                alert("✨ Forum post published successfully!");
+                toast.success("✨ Forum post published successfully!");
                 form.reset();
                 setImageUrl("");
             }
         } catch (error) {
             console.error("Error adding forum post:", error);
-            alert("Something went wrong. Please try again.");
+            toast.error("Something went wrong. Please try again.");
         } finally {
             setIsLoading(false);
         }

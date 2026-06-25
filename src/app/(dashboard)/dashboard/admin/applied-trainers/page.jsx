@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { Loader2, Eye, X, Check, AlertCircle, Inbox, Clock, Award, Sparkles } from 'lucide-react';
+import { toast } from 'sonner';
 
 const AppliedTrainerPage = () => {
     const [applications, setApplications] = useState([]);
@@ -58,7 +59,7 @@ const AppliedTrainerPage = () => {
     const handleReject = async () => {
         if (!selectedApp) return;
         if (!feedback.trim()) {
-            alert("Please provide feedback for rejection.");
+            toast.warning("Please provide feedback for rejection.");
             return;
         }
         setIsActionLoading(true);

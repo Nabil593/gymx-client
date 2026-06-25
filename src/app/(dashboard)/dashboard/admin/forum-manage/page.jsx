@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { Loader2, Trash2, Inbox, Calendar, User, MessageSquare, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { toast } from 'sonner';
 
 const ForumManagePage = () => {
     const [posts, setPosts] = useState([]);
@@ -32,19 +33,22 @@ const ForumManagePage = () => {
 
     // Handle Delete Forum Post
     const handleDeletePost = async (id) => {
-        if (!confirm("Are you sure you want to delete this community post permanently? This action cannot be undone.")) return;
-
         setActionLoadingId(id);
         try {
             const response = await fetch(`${baseUrl}/api/admin/forums/delete/${id}`, {
                 method: 'DELETE'
             });
             const data = await response.json();
+
             if (data.success) {
                 setPosts(prev => prev.filter(post => post._id !== id));
+                toast.success("Community post deleted successfully!");
+            } else {
+                toast.error(data.message || "Failed to delete post.");
             }
         } catch (error) {
             console.error("Error deleting post:", error);
+            toast.error("Something went wrong. Please try again.");
         } finally {
             setActionLoadingId(null);
         }

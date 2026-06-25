@@ -4,6 +4,7 @@ import React, { useState, useEffect, use } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from '@/lib/auth-client';
+import { toast } from 'sonner';
 
 const SingleForumDetailsPage = ({ params: paramsPromise }) => {
     const params = use(paramsPromise);
@@ -91,7 +92,7 @@ const SingleForumDetailsPage = ({ params: paramsPromise }) => {
     // Comment Edit Submit
     const handleEditSubmit = async (commentId, commentOwnerEmail) => {
         if (!user || user.email !== commentOwnerEmail) {
-            alert("You can only edit your own comments!");
+            toast.warning("You can only edit your own comments!");
             return;
         }
         if (!editText.trim()) return;
@@ -110,7 +111,7 @@ const SingleForumDetailsPage = ({ params: paramsPromise }) => {
                 setPost({ ...post, comments: updatedComments });
                 setEditingCommentId(null);
             } else {
-                alert(data.message || "Unauthorized");
+                toast.error(data.message || "Unauthorized");
             }
         } catch (error) {
             console.error("Comment update error:", error);
@@ -120,7 +121,7 @@ const SingleForumDetailsPage = ({ params: paramsPromise }) => {
     // Comment Delete Handler
     const handleCommentDelete = async (commentId, commentOwnerEmail) => {
         if (!user || user.email !== commentOwnerEmail) {
-            alert("You can only delete your own comments!");
+            toast.warning("You can only delete your own comments!");
             return;
         }
         if (!confirm("Are you sure you want to delete this comment?")) return;
@@ -135,7 +136,7 @@ const SingleForumDetailsPage = ({ params: paramsPromise }) => {
             if (data.success) {
                 setPost({ ...post, comments: post.comments.filter(c => c.commentId !== commentId) });
             } else {
-                alert(data.message || "Unauthorized");
+                toast.error(data.message || "Unauthorized");
             }
         } catch (error) {
             console.error("Comment delete error:", error);

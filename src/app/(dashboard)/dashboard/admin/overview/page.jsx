@@ -17,13 +17,7 @@ const AdminOverviewPage = () => {
     // 🔄 Fetch Admin Stats
     const fetchAdminStats = useCallback(async () => {
         try {
-            const response = await fetch(`${baseUrl}/api/admin-overview`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include'
-            });
+            const response = await fetch(`${baseUrl}/api/admin-overview`);
             const data = await response.json();
             if (data.success) {
                 setAdminData(data.stats);

@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useSession } from '@/lib/auth-client';
 import { Loader2, Trash2, Calendar, ThumbsUp, ThumbsDown, FileText } from 'lucide-react';
 import Image from 'next/image';
+import { toast } from 'sonner';
 
 const MyForumPost = () => {
     const { data: sessionData } = useSession();
@@ -40,7 +41,7 @@ const MyForumPost = () => {
     }, [userEmail, fetchMyPosts]);
 
     const handleDelete = async (id) => {
-        const confirmDelete = window.confirm("Are you sure you want to delete this forum post?");
+        const confirmDelete = toast.success("Delete this forum post");
         if (!confirmDelete) return;
 
         try {
@@ -49,12 +50,12 @@ const MyForumPost = () => {
             });
             const data = await response.json();
             if (data.success) {
-                alert("Forum post deleted successfully.");
+                toast.success("Forum post deleted successfully.");
                 setPosts(prev => prev.filter(post => post._id !== id));
             }
         } catch (error) {
             console.error("Error deleting post:", error);
-            alert("Failed to delete the post. Try again.");
+            toast.error("Failed to delete the post. Try again.");
         }
     };
 
