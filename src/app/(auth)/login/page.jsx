@@ -7,7 +7,6 @@ import { useForm } from 'react-hook-form';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 
-// এই কম্পোনেন্টটি আপনার আগের সব লজিক এবং ডিজাইন ধরে রাখবে
 function LoginForm() {
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);

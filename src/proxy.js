@@ -1,21 +1,21 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
 
-export function proxy(request) {
+export async function proxy(request) {
   const { pathname } = request.nextUrl;
 
-  const token = request.cookies.get("better-auth.session_token");
+  const session = await auth.api.getSession({
+    headers: request.headers,
+  });
 
-  const privateRoutes = [
-    "/dashboard",
-    "/payment",
-    "/apply-trainer",
-    "/classes/",
-    "/forum/",
-  ];
+  const privateRoutes = ["/dashboard", "/payment", "/apply-trainer"];
 
-  const isPrivate = privateRoutes.some((route) => pathname.startsWith(route));
+  const isPrivate =
+    privateRoutes.some((route) => pathname.startsWith(route)) ||
+    (pathname.startsWith("/classes/") && pathname.split("/").length > 2) ||
+    (pathname.startsWith("/forum/") && pathname.split("/").length > 2);
 
-  if (isPrivate && !token) {
+  if (isPrivate && !session) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
