@@ -8,7 +8,7 @@ import { Loader2, ArrowUpRight, Users, Clock, Tag } from 'lucide-react';
 const FeaturedClasses = () => {
     const [classes, setClasses] = useState([]);
     const [loading, setLoading] = useState(true);
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     useEffect(() => {
         const fetchFeaturedClasses = async () => {

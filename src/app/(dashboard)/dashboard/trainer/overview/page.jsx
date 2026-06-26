@@ -17,7 +17,7 @@ const TrainerOverviewPage = () => {
             if (!user?.email) return;
 
             try {
-                const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+                const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
                 const response = await fetch(`${baseUrl}/api/trainer-stats/${user.email}`);
                 const data = await response.json();

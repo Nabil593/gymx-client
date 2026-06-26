@@ -8,7 +8,7 @@ const ManageUsersPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [actionLoadingId, setActionLoadingId] = useState(null);
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     // Fetch All Users
     const fetchUsers = useCallback(async () => {

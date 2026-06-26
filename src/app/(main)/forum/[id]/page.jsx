@@ -28,10 +28,14 @@ const SingleForumDetailsPage = ({ params: paramsPromise }) => {
     // }, [user, isPending, router]);
 
     // Data Fetch
+
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
+
     useEffect(() => {
         const fetchPostDetails = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/public/forum-posts/${id}`);
+                const res = await fetch(`${baseUrl}/api/public/forum-posts/${id}`);
                 const data = await res.json();
                 if (data.success) {
                     setPost(data.post);
@@ -49,7 +53,7 @@ const SingleForumDetailsPage = ({ params: paramsPromise }) => {
     const handleVote = async (voteType) => {
         if (!user || !user.email) return;
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/forum-posts/${id}/vote`, {
+            const res = await fetch(`${baseUrl}/api/user/forum-posts/${id}/vote`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userEmail: user.email, voteType })
@@ -69,7 +73,7 @@ const SingleForumDetailsPage = ({ params: paramsPromise }) => {
         if (!commentText.trim() || !user || !user.email) return;
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/forum-posts/${id}/comments`, {
+            const res = await fetch(`${baseUrl}/api/user/forum-posts/${id}/comments`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -98,7 +102,7 @@ const SingleForumDetailsPage = ({ params: paramsPromise }) => {
         if (!editText.trim()) return;
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/forum-posts/${id}/comments/${commentId}`, {
+            const res = await fetch(`${baseUrl}/api/user/forum-posts/${id}/comments/${commentId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text: editText, userEmail: user.email })
@@ -127,7 +131,7 @@ const SingleForumDetailsPage = ({ params: paramsPromise }) => {
         if (!confirm("Are you sure you want to delete this comment?")) return;
 
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/forum-posts/${id}/comments/${commentId}`, {
+            const res = await fetch(`${baseUrl}/api/user/forum-posts/${id}/comments/${commentId}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userEmail: user.email })

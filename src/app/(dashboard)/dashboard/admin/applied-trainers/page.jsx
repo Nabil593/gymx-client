@@ -11,7 +11,7 @@ const AppliedTrainerPage = () => {
     const [feedback, setFeedback] = useState("");
     const [isActionLoading, setIsActionLoading] = useState(false);
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     // Fetch Pending Applications
     const fetchApplications = useCallback(async () => {

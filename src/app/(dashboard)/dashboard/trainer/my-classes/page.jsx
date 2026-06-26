@@ -17,7 +17,7 @@ const MyClassesPage = () => {
     const [editingClass, setEditingClass] = useState(null); // stores class object for edit modal
     const [isUpdating, setIsUpdating] = useState(false);
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     // Class load function
     const fetchMyClasses = async () => {

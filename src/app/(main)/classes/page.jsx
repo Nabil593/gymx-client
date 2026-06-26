@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 const AllClassesPage = () => {
-    
+
     const [classes, setClasses] = useState([]);
     const [search, setSearch] = useState('');
     const [category, setCategory] = useState('');
@@ -12,15 +12,16 @@ const AllClassesPage = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
 
-    
+
     const categories = ['Yoga', 'Cardio', 'Weights', 'Zumba', 'CrossFit', 'Martial Arts'];
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     // Data Fetch
     const fetchClasses = async (currentSearch = search, currentCategory = category, currentPage = page) => {
         setLoading(true);
         try {
             const res = await fetch(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/public/classes?page=${currentPage}&limit=6&search=${currentSearch}&category=${currentCategory}`
+                `${baseUrl}/api/public/classes?page=${currentPage}&limit=6&search=${currentSearch}&category=${currentCategory}`
             );
             const data = await res.json();
 

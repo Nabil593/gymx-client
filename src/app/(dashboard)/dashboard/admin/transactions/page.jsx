@@ -8,7 +8,7 @@ const TransactionsPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [copiedId, setCopiedId] = useState(null);
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     // Fetch Transactions from Backend
     const fetchTransactions = useCallback(async () => {

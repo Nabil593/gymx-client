@@ -9,7 +9,7 @@ const ManageTrainersPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [actionLoadingEmail, setActionLoadingEmail] = useState(null);
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     // 🔄 Fetch All Active Trainers
     const fetchTrainers = useCallback(async () => {

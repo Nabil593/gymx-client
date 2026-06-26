@@ -11,11 +11,13 @@ const ForumPage = () => {
 
     const limit = 6;
 
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+
     useEffect(() => {
         const fetchForumPosts = async () => {
             setLoading(true);
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum-posts?page=${currentPage}&limit=${limit}`);
+                const res = await fetch(`${baseUrl}/api/forum-posts?page=${currentPage}&limit=${limit}`);
                 const data = await res.json();
 
                 if (data.success) {

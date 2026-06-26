@@ -19,7 +19,7 @@ const PaymentContent = () => {
     const { data: session, isPending } = authClient.useSession();
     const currentUserEmail = session?.user?.email;
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     useEffect(() => {
         if (!classId) {

@@ -8,7 +8,7 @@ import { Loader2, ArrowUpRight, User, Calendar, ArrowRight } from 'lucide-react'
 const LatestForum = () => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
     useEffect(() => {
         const fetchLatestPosts = async () => {

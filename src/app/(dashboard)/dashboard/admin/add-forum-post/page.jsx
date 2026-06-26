@@ -11,7 +11,7 @@ const AddForumPostPage = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [message, setMessage] = useState({ type: '', text: '' });
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
     const imgbbApiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY || "d3e4bc27d418ba7d094aa1df32884888";
 
     // Handle Image Upload to Imgbb

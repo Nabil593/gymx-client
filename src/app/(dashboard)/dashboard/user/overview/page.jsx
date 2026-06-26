@@ -12,7 +12,7 @@ const UserOverviewPage = () => {
     const [overviewData, setOverviewData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
     const userEmail = user?.email;
 
     // Fetch Overview Stats & Application Status

@@ -81,7 +81,7 @@ const AddClassPage = () => {
         };
 
         try {
-            const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL;
             const response = await fetch(`${baseUrl}/api/classes`, {
                 method: 'POST',
                 headers: {
