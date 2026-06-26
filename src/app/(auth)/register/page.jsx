@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Eye, EyeOff, Loader2, Upload } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
@@ -12,6 +12,9 @@ export default function RegisterPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [apiError, setApiError] = useState("");
     const router = useRouter();
+
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get("callbackUrl");
 
     const { register, handleSubmit, watch, formState: { errors } } = useForm({
         defaultValues: {
@@ -67,6 +70,23 @@ export default function RegisterPage() {
         } catch (err) {
             setApiError(err.message || "Registration failed. Try again.");
         } finally {
+            setIsLoading(false);
+        }
+    };
+
+    // Google Sign-In
+    const handleGoogleSignIn = async () => {
+        try {
+            setIsLoading(true);
+            await authClient.signIn.social({
+                provider: "google",
+                callbackURL: callbackUrl || '/',
+                additionalParameters: {
+                    role: "user"
+                }
+            });
+        } catch (err) {
+            setApiError("Google Authentication failed.");
             setIsLoading(false);
         }
     };
@@ -187,6 +207,7 @@ export default function RegisterPage() {
                 </div>
 
                 <button
+                    onClick={handleGoogleSignIn}
                     type="button"
                     className="w-full bg-black hover:bg-zinc-900 border border-zinc-800 text-zinc-200 h-9 rounded text-xs font-semibold flex items-center justify-center transition-colors gap-2 cursor-pointer"
                 >

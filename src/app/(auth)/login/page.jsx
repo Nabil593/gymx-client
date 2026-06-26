@@ -62,10 +62,13 @@ export default function LoginPage() {
             setIsLoading(true);
             await authClient.signIn.social({
                 provider: "google",
-                callbackURL: callbackUrl,
+                callbackURL: callbackUrl || "/",
+                additionalParameters: {
+                    role: "user"
+                }
             });
         } catch (err) {
-            setApiError("Google Authentication failed. Please try again.");
+            setApiError("Google Authentication failed.");
             setIsLoading(false);
         }
     };
