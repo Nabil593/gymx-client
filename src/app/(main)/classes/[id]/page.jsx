@@ -25,16 +25,16 @@ const ClassDetailsPage = () => {
             if (!id) return;
             setLoading(true);
             try {
-                const res = await fetch(`http://localhost:5000/api/classes/${id}`);
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/classes/${id}`);
                 const data = await res.json();
                 if (data) setClassData(data.classData || data);
 
                 if (userEmail) {
-                    const bookingRes = await fetch(`http://localhost:5000/api/check-booked?email=${encodeURIComponent(userEmail)}&classId=${id}`);
+                    const bookingRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/check-booked?email=${encodeURIComponent(userEmail)}&classId=${id}`);
                     const bookingData = await bookingRes.json();
                     setIsBooked(!!(bookingData.isBooked || bookingData.hasBooked));
 
-                    const favRes = await fetch(`http://localhost:5000/api/check-favorite?email=${encodeURIComponent(userEmail)}&classId=${id}`);
+                    const favRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/check-favorite?email=${encodeURIComponent(userEmail)}&classId=${id}`);
                     const favData = await favRes.json();
                     setIsFavorite(!!favData.isFav);
                 }
@@ -58,7 +58,7 @@ const ClassDetailsPage = () => {
 
     const handleFavorite = async () => {
         try {
-            const res = await fetch(`http://localhost:5000/api/favorites`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/favorites`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

@@ -15,7 +15,7 @@ const ForumPage = () => {
         const fetchForumPosts = async () => {
             setLoading(true);
             try {
-                const res = await fetch(`http://localhost:5000/api/forum-posts?page=${currentPage}&limit=${limit}`);
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/forum-posts?page=${currentPage}&limit=${limit}`);
                 const data = await res.json();
 
                 if (data.success) {

@@ -20,7 +20,7 @@ const AllClassesPage = () => {
         setLoading(true);
         try {
             const res = await fetch(
-                `http://localhost:5000/api/public/classes?page=${currentPage}&limit=6&search=${currentSearch}&category=${currentCategory}`
+                `${process.env.NEXT_PUBLIC_API_URL}/api/public/classes?page=${currentPage}&limit=6&search=${currentSearch}&category=${currentCategory}`
             );
             const data = await res.json();
 
