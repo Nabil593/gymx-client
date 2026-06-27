@@ -19,12 +19,11 @@ import {
     ClipboardList,
     UserPlus,
     Heart,
-    X, // সাইডবার ক্লোজ করার জন্য আইকন
+    X,
 } from 'lucide-react';
 import { authClient, useSession } from '@/lib/auth-client';
 import Image from 'next/image';
 
-// 📱 রেসপন্সিভনেস কন্ট্রোল করার জন্য isOpen এবং onClose প্রপস রিসিভ করা হচ্ছে
 export default function Sidebar({ isOpen, onClose }) {
 
     const { data: sessionData, isPending, refetch } = useSession();
@@ -34,7 +33,6 @@ export default function Sidebar({ isOpen, onClose }) {
     const role = user?.role;
     const pathname = usePathname();
 
-    // Dynamic navigation matrix by role
     const linksByRole = {
         admin: [
             { name: 'Overview', href: '/dashboard/admin/overview', icon: LayoutDashboard },
@@ -84,14 +82,16 @@ export default function Sidebar({ isOpen, onClose }) {
             <div className="flex flex-col pt-6 px-4">
                 {/* GymX Logo Header + Mobile Close Button */}
                 <div className="flex items-center justify-between px-3 mb-8">
-                    <div className="flex items-center gap-3">
-                        <div className="h-6 w-6 bg-zinc-50 rounded flex items-center justify-center">
-                            <span className="text-black font-extrabold text-sm tracking-tighter">X</span>
+                    <Link href={'/'}>
+                        <div className="flex items-center gap-3">
+                            <div className="h-6 w-6 bg-zinc-50 rounded flex items-center justify-center">
+                                <span className="text-black font-extrabold text-sm tracking-tighter">G</span>
+                            </div>
+                            <span className="text-sm font-black tracking-widest text-zinc-100 uppercase">GymX Panel</span>
                         </div>
-                        <span className="text-sm font-black tracking-widest text-zinc-100 uppercase">GymX Panel</span>
-                    </div>
+                    </Link>
 
-                    {/* 📱 শুধুমাত্র মোবাইলে দেখাবে: সাইডবার বন্ধ করার ক্রস বাটন */}
+                    {/* Mobile show */}
                     <button
                         onClick={onClose}
                         className="p-1 text-zinc-500 hover:text-zinc-200 md:hidden rounded hover:bg-zinc-900 cursor-pointer"
@@ -111,7 +111,7 @@ export default function Sidebar({ isOpen, onClose }) {
                             <Link
                                 key={item.name}
                                 href={item.href}
-                                onClick={onClose} // 📱 মোবাইল মেনুতে লিংকে ক্লিক করলে সাইডবার অটো বন্ধ হয়ে যাবে
+                                onClick={onClose}
                                 className={`w-full h-9 px-3 text-xs font-medium rounded flex items-center gap-3 transition-all duration-200 group cursor-pointer ${isActive
                                     ? 'bg-zinc-100 text-black font-bold shadow-sm'
                                     : 'text-zinc-400 hover:bg-zinc-900/80 hover:text-zinc-200'
