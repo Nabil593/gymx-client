@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { useSession } from '@/lib/auth-client';
+import { authClient, useSession } from '@/lib/auth-client';
 import { Loader2, Calendar, Heart, User, Mail, Shield, AlertCircle, CheckCircle, Clock, XCircle } from 'lucide-react';
 import Image from 'next/image';
 
@@ -18,8 +18,16 @@ const UserOverviewPage = () => {
     // Fetch Overview Stats & Application Status
     const fetchOverviewData = useCallback(async () => {
         if (!userEmail) return;
+
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
+
         try {
-            const response = await fetch(`${baseUrl}/api/user-overview/${userEmail}`);
+            const response = await fetch(`${baseUrl}/api/user-overview/${userEmail}`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
+            });
             const data = await response.json();
             if (data.success) {
                 setOverviewData(data);

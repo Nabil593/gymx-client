@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Loader2, Trash2, Inbox, Calendar, User, MessageSquare, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { toast } from 'sonner';
+import { authClient } from '@/lib/auth-client';
 
 const ForumManagePage = () => {
     const [posts, setPosts] = useState([]);
@@ -13,8 +14,14 @@ const ForumManagePage = () => {
 
     // Fetch All Community Forum Posts
     const fetchPosts = useCallback(async () => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         try {
-            const response = await fetch(`${baseUrl}/api/admin/forums`);
+            const response = await fetch(`${baseUrl}/api/admin/forums`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
+            });
             const data = await response.json();
             if (data.success) {
                 setPosts(data.posts);
@@ -33,10 +40,15 @@ const ForumManagePage = () => {
 
     // Handle Delete Forum Post
     const handleDeletePost = async (id) => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         setActionLoadingId(id);
         try {
             const response = await fetch(`${baseUrl}/api/admin/forums/delete/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
             });
             const data = await response.json();
 

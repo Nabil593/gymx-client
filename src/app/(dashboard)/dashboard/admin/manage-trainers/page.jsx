@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Loader2, UserMinus, ShieldAlert, Inbox, Mail, Star } from 'lucide-react';
 import { toast } from 'sonner';
+import { authClient } from '@/lib/auth-client';
 
 const ManageTrainersPage = () => {
     const [trainers, setTrainers] = useState([]);
@@ -11,10 +12,16 @@ const ManageTrainersPage = () => {
 
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    // 🔄 Fetch All Active Trainers
+    // Fetch All Active Trainers
     const fetchTrainers = useCallback(async () => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         try {
-            const response = await fetch(`${baseUrl}/api/admin/trainers`);
+            const response = await fetch(`${baseUrl}/api/admin/trainers`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
+            });
             const data = await response.json();
             if (data.success) {
                 setTrainers(data.trainers);
@@ -31,15 +38,20 @@ const ManageTrainersPage = () => {
         fetchTrainers();
     }, [fetchTrainers]);
 
-    // 📉 Handle Demote Trainer
+    // Handle Demote Trainer
     const handleDemote = async (email, name) => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         const confirmDemote = toast.success(`Demote from ${name || 'this trainer'}?`);
         if (!confirmDemote) return;
 
         setActionLoadingEmail(email);
         try {
             const response = await fetch(`${baseUrl}/api/admin/trainers/demote/${email}`, {
-                method: 'PATCH'
+                method: 'PATCH',
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
             });
             const data = await response.json();
 

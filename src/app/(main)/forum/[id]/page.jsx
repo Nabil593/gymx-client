@@ -20,17 +20,13 @@ const SingleForumDetailsPage = ({ params: paramsPromise }) => {
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editText, setEditText] = useState("");
 
-    // Private page Rpotection
-    // useEffect(() => {
-    //     if (!isPending && !user) {
-    //         router.push('/login');
-    //     }
-    // }, [user, isPending, router]);
+    const [replyingTo, setReplyingTo] = useState(null);
+    const [replyText, setReplyText] = useState("");
 
-    // Data Fetch
+    const [editingReplyId, setEditingReplyId] = useState(null);
+    const [editReplyText, setEditReplyText] = useState("");
 
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-
 
     useEffect(() => {
         const fetchPostDetails = async () => {
@@ -145,6 +141,64 @@ const SingleForumDetailsPage = ({ params: paramsPromise }) => {
         } catch (error) {
             console.error("Comment delete error:", error);
         }
+    };
+
+    // Comment Reply handler 
+    const handleReplySubmit = async (commentId) => {
+        if (!replyText.trim()) return;
+        try {
+            const res = await fetch(`${baseUrl}/api/user/forum-posts/${id}/comments/${commentId}/replies`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userEmail: user.email, userName: user.name, userImage: user.image, text: replyText })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const updatedComments = post.comments.map(c =>
+                    c.commentId === commentId ? { ...c, replies: [...(c.replies || []), data.reply] } : c
+                );
+                setPost({ ...post, comments: updatedComments });
+                setReplyText("");
+                setReplyingTo(null);
+            }
+        } catch (error) { toast.error("Failed to post reply"); }
+    };
+
+    // Comment Reply delete handler
+    const handleReplyDelete = async (commentId, replyId) => {
+        try {
+            const res = await fetch(`${baseUrl}/api/user/forum-posts/${id}/comments/${commentId}/replies/${replyId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userEmail: user.email })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const updatedComments = post.comments.map(c =>
+                    c.commentId === commentId ? { ...c, replies: c.replies.filter(r => r.replyId !== replyId) } : c
+                );
+                setPost({ ...post, comments: updatedComments });
+            }
+        } catch (error) { toast.error("Failed to delete"); }
+    };
+
+    // Comment Reply Edit handler
+    const handleReplyEdit = async (commentId, replyId, newText) => {
+        try {
+            const res = await fetch(`${baseUrl}/api/user/forum-posts/${id}/comments/${commentId}/replies/${replyId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: newText, userEmail: user.email })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const updatedComments = post.comments.map(c =>
+                    c.commentId === commentId ? { ...c, replies: c.replies.map(r => r.replyId === replyId ? { ...r, text: newText } : r) } : c
+                );
+                setPost({ ...post, comments: updatedComments });
+                setEditingReplyId(null);
+            }
+        } catch (error) { toast.error("Failed to update"); }
     };
 
     if (loading || isPending) {
@@ -295,6 +349,48 @@ const SingleForumDetailsPage = ({ params: paramsPromise }) => {
                                             </div>
                                         ) : (
                                             <p className="text-xs text-[#a1a1aa] leading-relaxed">{comment.text}</p>
+                                        )}
+
+                                        {/* Reply Trigger */}
+                                        <button onClick={() => setReplyingTo(comment.commentId)} className="text-[10px] text-emerald-500 mt-2 block">Reply</button>
+
+                                        {/* Replies List */}
+                                        <div className="ml-8 mt-4 space-y-3">
+                                            {comment.replies?.map(rep => (
+                                                <div key={rep.replyId} className="bg-[#09090b] p-3 rounded-lg border border-[#27272a]">
+                                                    {editingReplyId === rep.replyId ? (
+                                                        <div>
+                                                            <input value={editReplyText} onChange={(e) => setEditReplyText(e.target.value)} className="w-full bg-[#18181b] p-2 text-xs rounded text-white border border-[#3f3f46]" />
+                                                            <div className="flex gap-2 mt-2">
+                                                                <button onClick={() => handleReplyEdit(comment.commentId, rep.replyId, editReplyText)} className="text-[9px] bg-white text-black px-2 py-1 rounded">Save</button>
+                                                                <button onClick={() => setEditingReplyId(null)} className="text-[9px] bg-[#27272a] px-2 py-1 rounded text-white">Cancel</button>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div>
+                                                            <p className="text-[10px] font-bold text-emerald-400">{rep.userName}</p>
+                                                            <p className="text-xs text-[#a1a1aa]">{rep.text}</p>
+                                                            {user?.email === rep.userEmail && (
+                                                                <div className="flex gap-3 mt-2">
+                                                                    <button onClick={() => { setEditingReplyId(rep.replyId); setEditReplyText(rep.text); }} className="text-[9px] text-[#71717a] hover:text-white">Edit</button>
+                                                                    <button onClick={() => handleReplyDelete(comment.commentId, rep.replyId)} className="text-[9px] text-rose-500/70 hover:text-rose-500">Delete</button>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Reply Input Box */}
+                                        {replyingTo === comment.commentId && (
+                                            <div className="mt-4 ml-8">
+                                                <input className="w-full bg-[#09090b] border border-[#27272a] p-2 text-xs rounded text-white" placeholder="Write a reply..." onChange={(e) => setReplyText(e.target.value)} />
+                                                <div className="flex gap-2 mt-2">
+                                                    <button onClick={() => handleReplySubmit(comment.commentId)} className="px-3 py-1 bg-white text-black text-[10px] rounded">Submit</button>
+                                                    <button onClick={() => setReplyingTo(null)} className="px-3 py-1 bg-[#27272a] text-white text-[10px] rounded">Cancel</button>
+                                                </div>
+                                            </div>
                                         )}
 
                                         {user && user.email === comment.userEmail && editingCommentId !== comment.commentId && (

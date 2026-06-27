@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Loader2, CheckCircle2, XCircle, Trash2, Inbox, Calendar, User } from 'lucide-react';
 import { toast } from 'sonner';
+import { authClient } from '@/lib/auth-client';
 
 const ManageClassesPage = () => {
     const [classes, setClasses] = useState([]);
@@ -13,8 +14,14 @@ const ManageClassesPage = () => {
 
     // Fetch All Classes submitted by trainers
     const fetchClasses = useCallback(async () => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         try {
-            const response = await fetch(`${baseUrl}/api/admin/classes`);
+            const response = await fetch(`${baseUrl}/api/admin/classes`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
+            });
             const data = await response.json();
             if (data.success) {
                 setClasses(data.classes);
@@ -33,9 +40,16 @@ const ManageClassesPage = () => {
 
     // Handle Approve Class
     const handleApproveClass = async (id) => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         setActionLoadingId(id);
         try {
-            const response = await fetch(`${baseUrl}/api/admin/classes/approve/${id}`, { method: 'PATCH' });
+            const response = await fetch(`${baseUrl}/api/admin/classes/approve/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
+            });
             const data = await response.json();
             if (data.success) {
                 setClasses(prev => prev.map(cls => cls._id === id ? { ...cls, status: 'Approved' } : cls));
@@ -50,13 +64,20 @@ const ManageClassesPage = () => {
 
     // Handle Reject Class
     const handleRejectClass = async (id) => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         setActionLoadingId(id);
         try {
-            const response = await fetch(`${baseUrl}/api/admin/classes/reject/${id}`, { method: 'PATCH' });
+            const response = await fetch(`${baseUrl}/api/admin/classes/reject/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
+            });
             const data = await response.json();
             if (data.success) {
                 setClasses(prev => prev.map(cls => cls._id === id ? { ...cls, status: 'Rejected' } : cls));
-                toast.info("Class has been rejected."); // info ব্যবহার করা ভালো
+                toast.info("Class has been rejected.");
             }
         } catch (error) {
             toast.error("Error rejecting the class.");
@@ -67,10 +88,16 @@ const ManageClassesPage = () => {
 
     // Handle Delete Class
     const handleDeleteClass = async (id) => {
-
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         setActionLoadingId(id);
         try {
-            const response = await fetch(`${baseUrl}/api/admin/classes/delete/${id}`, { method: 'DELETE' });
+            const response = await fetch(`${baseUrl}/api/admin/classes/delete/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
+            });
             const data = await response.json();
             if (data.success) {
                 setClasses(prev => prev.filter(cls => cls._id !== id));

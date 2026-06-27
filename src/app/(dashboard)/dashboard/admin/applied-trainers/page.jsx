@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Loader2, Eye, X, Check, AlertCircle, Inbox, Clock, Award, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
+import { authClient } from '@/lib/auth-client';
 
 const AppliedTrainerPage = () => {
     const [applications, setApplications] = useState([]);
@@ -15,8 +16,14 @@ const AppliedTrainerPage = () => {
 
     // Fetch Pending Applications
     const fetchApplications = useCallback(async () => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         try {
-            const response = await fetch(`${baseUrl}/api/admin/trainer-applications/pending`);
+            const response = await fetch(`${baseUrl}/api/admin/trainer-applications/pending`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
+            });
             const data = await response.json();
             if (data.success) {
                 setApplications(data.applications);
@@ -35,12 +42,17 @@ const AppliedTrainerPage = () => {
 
     // ⚡ Handle Approve
     const handleApprove = async () => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         if (!selectedApp) return;
         setIsActionLoading(true);
         try {
             const response = await fetch(`${baseUrl}/api/admin/trainer-applications/approve/${selectedApp._id}`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    authorization: `Bearer ${token}`,
+                },
                 body: JSON.stringify({ email: selectedApp.email, feedback })
             });
             const data = await response.json();
@@ -57,6 +69,8 @@ const AppliedTrainerPage = () => {
 
     // Handle Reject
     const handleReject = async () => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         if (!selectedApp) return;
         if (!feedback.trim()) {
             toast.warning("Please provide feedback for rejection.");
@@ -66,7 +80,10 @@ const AppliedTrainerPage = () => {
         try {
             const response = await fetch(`${baseUrl}/api/admin/trainer-applications/reject/${selectedApp._id}`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    authorization: `Bearer ${token}`,
+                },
                 body: JSON.stringify({ feedback })
             });
             const data = await response.json();

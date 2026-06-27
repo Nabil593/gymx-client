@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { Loader2, ShieldCheck, UserCheck, UserX, ShieldAlert, Inbox, Dumbbell } from 'lucide-react';
+import { authClient } from '@/lib/auth-client';
 
 const ManageUsersPage = () => {
     const [users, setUsers] = useState([]);
@@ -12,8 +13,14 @@ const ManageUsersPage = () => {
 
     // Fetch All Users
     const fetchUsers = useCallback(async () => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         try {
-            const response = await fetch(`${baseUrl}/api/admin/users`);
+            const response = await fetch(`${baseUrl}/api/admin/users`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
+            });
             const data = await response.json();
             if (data.success) {
                 setUsers(data.users);
@@ -32,11 +39,16 @@ const ManageUsersPage = () => {
 
     // Handle Block / Unblock Toggle
     const handleToggleBlock = async (id, currentStatus) => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         setActionLoadingId(id);
         try {
             const response = await fetch(`${baseUrl}/api/admin/users/toggle-block/${id}`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    authorization: `Bearer ${token}`,
+                },
                 body: JSON.stringify({ currentStatus })
             });
             const data = await response.json();
@@ -54,10 +66,15 @@ const ManageUsersPage = () => {
 
     // Handle Make Admin
     const handleMakeAdmin = async (id) => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         setActionLoadingId(id);
         try {
             const response = await fetch(`${baseUrl}/api/admin/users/make-admin/${id}`, {
-                method: 'PATCH'
+                method: 'PATCH',
+                headers: {
+                    authorization: `Bearer ${token}`,
+                },
             });
             const data = await response.json();
             if (data.success) {

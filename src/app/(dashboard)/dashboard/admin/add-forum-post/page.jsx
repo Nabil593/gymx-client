@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Loader2, ImagePlus, Send, X, FileText } from 'lucide-react';
+import { authClient } from '@/lib/auth-client';
 
 const AddForumPostPage = () => {
     const [title, setTitle] = useState('');
@@ -55,11 +56,15 @@ const AddForumPostPage = () => {
 
         setIsSubmitting(true);
         setMessage({ type: '', text: '' });
-
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         try {
             const response = await fetch(`${baseUrl}/api/admin/forum-posts`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    authorization: `Bearer ${token}`
+                },
                 body: JSON.stringify({
                     title,
                     image: imageUrl,
@@ -101,8 +106,8 @@ const AddForumPostPage = () => {
             {/* Notification Toast/Message */}
             {message.text && (
                 <div className={`p-3 rounded-lg border text-xs font-semibold ${message.type === 'success'
-                        ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-                        : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+                    ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                    : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
                     }`}>
                     {message.text}
                 </div>

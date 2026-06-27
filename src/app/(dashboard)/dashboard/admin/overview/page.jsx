@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { useSession } from '@/lib/auth-client';
+import { authClient, useSession } from '@/lib/auth-client';
 import { Loader2, Users, Dumbbell, Calendar, User, Mail, ShieldAlert } from 'lucide-react';
 import Image from 'next/image';
 
@@ -14,10 +14,17 @@ const AdminOverviewPage = () => {
 
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    // 🔄 Fetch Admin Stats
+    
+    // Fetch Admin Stats
     const fetchAdminStats = useCallback(async () => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         try {
-            const response = await fetch(`${baseUrl}/api/admin-overview`);
+            const response = await fetch(`${baseUrl}/api/admin-overview`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
+            });
             const data = await response.json();
             if (data.success) {
                 setAdminData(data.stats);

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { useSession } from '@/lib/auth-client';
+import { authClient, useSession } from '@/lib/auth-client';
 import { Dumbbell, Users, Mail, UserCheck, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -16,10 +16,17 @@ const TrainerOverviewPage = () => {
         const fetchTrainerStats = async () => {
             if (!user?.email) return;
 
+            const sessionToken = await authClient.token();
+            const token = sessionToken?.data?.token;
+
             try {
                 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-                const response = await fetch(`${baseUrl}/api/trainer-stats/${user.email}`);
+                const response = await fetch(`${baseUrl}/api/trainer-stats/${user.email}`, {
+                    headers: {
+                        authorization: `Bearer ${token}`,
+                    }
+                });
                 const data = await response.json();
                 if (data.success) {
                     setStats(data.stats);

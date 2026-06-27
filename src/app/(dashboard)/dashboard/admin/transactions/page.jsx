@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { Loader2, Inbox, CreditCard, Calendar, Mail, Hash, Copy, Check } from 'lucide-react';
+import { authClient } from '@/lib/auth-client';
 
 const TransactionsPage = () => {
     const [transactions, setTransactions] = useState([]);
@@ -12,8 +13,14 @@ const TransactionsPage = () => {
 
     // Fetch Transactions from Backend
     const fetchTransactions = useCallback(async () => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         try {
-            const response = await fetch(`${baseUrl}/api/admin/transactions`);
+            const response = await fetch(`${baseUrl}/api/admin/transactions`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
+            });
             const data = await response.json();
             if (data.success) {
                 setTransactions(data.transactions);
