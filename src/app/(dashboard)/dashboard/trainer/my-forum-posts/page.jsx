@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { useSession } from '@/lib/auth-client';
+import { authClient, useSession } from '@/lib/auth-client';
 import { Loader2, Trash2, Calendar, ThumbsUp, ThumbsDown, FileText } from 'lucide-react';
 import Image from 'next/image';
 import { toast } from 'sonner';
@@ -19,9 +19,15 @@ const MyForumPost = () => {
 
     // 🔄 Trainer Post Load Function
     const fetchMyPosts = useCallback(async () => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         if (!userEmail) return;
         try {
-            const response = await fetch(`${baseUrl}/api/my-forums/${userEmail}`);
+            const response = await fetch(`${baseUrl}/api/my-forums/${userEmail}`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
+            });
             const data = await response.json();
             if (data.success) {
                 setPosts(data.forums);
@@ -41,12 +47,14 @@ const MyForumPost = () => {
     }, [userEmail, fetchMyPosts]);
 
     const handleDelete = async (id) => {
-        const confirmDelete = toast.success("Delete this forum post");
-        if (!confirmDelete) return;
-
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         try {
             const response = await fetch(`${baseUrl}/api/forums/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
             });
             const data = await response.json();
             if (data.success) {

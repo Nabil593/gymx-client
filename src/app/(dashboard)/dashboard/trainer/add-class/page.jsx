@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useSession } from '@/lib/auth-client';
+import { authClient, useSession } from '@/lib/auth-client';
 import { Loader2, PlusCircle, AlignLeft, DollarSign, Clock, Layers, Award, Upload, Type, Calendar } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -80,12 +80,16 @@ const AddClassPage = () => {
             trainerImage: user?.image
         };
 
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
+
         try {
             const baseUrl = process.env.NEXT_PUBLIC_API_URL;
             const response = await fetch(`${baseUrl}/api/classes`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(classInfo)
             });

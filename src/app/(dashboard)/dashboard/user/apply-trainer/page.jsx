@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useSession } from '@/lib/auth-client';
+import { authClient, useSession } from '@/lib/auth-client';
 import { Loader2, Briefcase, Award, FileText, Send, CheckCircle2 } from 'lucide-react';
 
 const ApplyTrainerPage = () => {
@@ -35,10 +35,16 @@ const ApplyTrainerPage = () => {
             bio
         };
 
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
+
         try {
             const response = await fetch(`${baseUrl}/api/trainer-applications`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    authorization: `Bearer ${token}`,
+                },
                 body: JSON.stringify(applicationPayload)
             });
 

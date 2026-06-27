@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { useSession } from '@/lib/auth-client';
+import { authClient, useSession } from '@/lib/auth-client';
 import { Loader2, Calendar, User, Eye, Inbox, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -17,9 +17,15 @@ const BookedClassesPage = () => {
 
     // Fetch Booked Classes
     const fetchBookedClasses = useCallback(async () => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         if (!userEmail) return;
         try {
-            const response = await fetch(`${baseUrl}/api/my-bookings/${userEmail}`);
+            const response = await fetch(`${baseUrl}/api/my-bookings/${userEmail}`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
+            });
             const data = await response.json();
             if (data.success) {
                 setBookings(data.bookings);

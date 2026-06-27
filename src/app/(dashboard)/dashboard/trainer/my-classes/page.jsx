@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { useSession } from '@/lib/auth-client';
+import { authClient, useSession } from '@/lib/auth-client';
 import { Loader2, Edit3, Trash2, Users, X, Layers, Clock, DollarSign } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -21,9 +21,15 @@ const MyClassesPage = () => {
 
     // Class load function
     const fetchMyClasses = async () => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         if (!user?.email) return;
         try {
-            const response = await fetch(`${baseUrl}/api/my-classes/${user.email}`);
+            const response = await fetch(`${baseUrl}/api/my-classes/${user.email}`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
+            });
             const data = await response.json();
             if (data.success) setClasses(data.classes);
         } catch (error) {
@@ -36,10 +42,16 @@ const MyClassesPage = () => {
     useEffect(() => {
         const fetchMyClasses = async () => {
 
+            const sessionToken = await authClient.token();
+            const token = sessionToken?.data?.token;
             if (!user?.email) return;
 
             try {
-                const response = await fetch(`${baseUrl}/api/my-classes/${user.email}`);
+                const response = await fetch(`${baseUrl}/api/my-classes/${user.email}`, {
+                    headers: {
+                        authorization: `Bearer ${token}`,
+                    }
+                });
                 const data = await response.json();
                 if (data.success) setClasses(data.classes);
             } catch (error) {
@@ -54,25 +66,43 @@ const MyClassesPage = () => {
 
     // Class Delete handler
     const handleDelete = async (id) => {
-        const confirmDelete = toast.success("Deleted this class");
-        if (!confirmDelete) return;
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
 
         try {
-            const response = await fetch(`${baseUrl}/api/classes/${id}`, { method: 'DELETE' });
+            const response = await fetch(`${baseUrl}/api/classes/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+            });
+
             const data = await response.json();
+
             if (data.success) {
                 toast.success("Class deleted successfully.");
-                setClasses(classes.filter(c => c._id !== id));
+                setClasses((prevClasses) => prevClasses.filter(c => c._id !== id));
+            } else {
+                toast.error(data.message || "Failed to delete the class.");
             }
         } catch (error) {
             console.error("Error deleting class:", error);
+            toast.error("An error occurred while deleting.");
         }
     };
 
     // Student viewing handler
     const handleViewStudents = async (className) => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         try {
-            const response = await fetch(`${baseUrl}/api/class-students/${encodeURIComponent(className)}`);
+            const response = await fetch(`${baseUrl}/api/class-students/${encodeURIComponent(className)}`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+            });
             const data = await response.json();
             if (data.success) {
                 setActiveStudents(data.students);
@@ -101,10 +131,16 @@ const MyClassesPage = () => {
             description: form.description.value
         };
 
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
+
         try {
             const response = await fetch(`${baseUrl}/api/classes/${editingClass._id}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    authorization: `Bearer ${token}`,
+                },
                 body: JSON.stringify(updatedInfo)
             });
             const data = await response.json();

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useSession } from '@/lib/auth-client';
+import { authClient, useSession } from '@/lib/auth-client';
 import { Loader2, FilePlus, AlignLeft, Upload, Type, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -67,12 +67,16 @@ const AddForumPostPage = () => {
             authorRole: user?.role,
         };
 
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
+
         try {
             const baseUrl = process.env.NEXT_PUBLIC_API_URL;
             const response = await fetch(`${baseUrl}/api/forums`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify(forumPostInfo)
             });

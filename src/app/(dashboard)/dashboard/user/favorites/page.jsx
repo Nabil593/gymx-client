@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { useSession } from '@/lib/auth-client';
+import { authClient, useSession } from '@/lib/auth-client';
 import { Loader2, Heart, HeartOff, Dumbbell } from 'lucide-react';
 import Image from 'next/image';
 import { toast } from 'sonner';
@@ -18,9 +18,15 @@ const FavoritesPage = () => {
 
     //  Fetch Favorite Classes
     const fetchFavorites = useCallback(async () => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         if (!userEmail) return;
         try {
-            const response = await fetch(`${baseUrl}/api/my-favorites/${userEmail}`);
+            const response = await fetch(`${baseUrl}/api/my-favorites/${userEmail}`, {
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
+            });
             const data = await response.json();
             if (data.success) {
                 setFavorites(data.favorites);
@@ -41,20 +47,21 @@ const FavoritesPage = () => {
 
     // Remove From Favorites Handler
     const handleRemoveFavorite = async (classId) => {
+        const sessionToken = await authClient.token();
+        const token = sessionToken?.data?.token;
         try {
             const res = await fetch(`${baseUrl}/api/favorites?email=${userEmail}&classId=${classId}`, {
-                method: "DELETE"
+                method: "DELETE",
+                headers: {
+                    authorization: `Bearer ${token}`,
+                }
             });
 
-            // 🛠️ ফিক্স: 'response' বদলে 'res' করা হয়েছে
             const data = await res.json();
 
             if (data.success) {
-                // স্টেট থেকে রিয়েল-টাইমে রিমুভ করা
                 setFavorites(prev => prev.filter(item => item.classId !== classId));
 
-                // যদি পেজে আলাদা কোনো 'isFavorite' স্টেট থাকে, সেটাকেও এখানে false করে দিতে পারেন
-                // setIsFavorite(false); 
             } else {
                 toast.error(data.message || "Failed to remove.");
             }
