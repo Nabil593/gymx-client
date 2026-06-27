@@ -62,7 +62,7 @@ export default function Banner() {
                 >
                     {/* Main "Explore Classes" CTA */}
                     <Link
-                        href="/all-classes"
+                        href="/classes"
                         className="group w-full sm:w-auto bg-zinc-50 hover:bg-zinc-200 text-black text-sm font-semibold h-11 px-6 rounded-md inline-flex items-center justify-center transition-colors gap-2"
                     >
                         <span>Explore Classes</span>
@@ -71,7 +71,7 @@ export default function Banner() {
 
                     {/* Secondary X-Style Outline CTA */}
                     <Link
-                        href="/community-forum"
+                        href="/forum"
                         className="w-full sm:w-auto bg-black hover:bg-zinc-900 text-zinc-300 hover:text-zinc-50 text-sm font-medium h-11 px-6 rounded-md inline-flex items-center justify-center transition-colors border border-zinc-800"
                     >
                         Join the Forum

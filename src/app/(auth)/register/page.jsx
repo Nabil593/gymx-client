@@ -113,9 +113,8 @@ function RegisterForm() {
                 <div className="space-y-1.5 text-left">
                     <label className="text-[11px] font-bold text-zinc-400 uppercase tracking-wider block">Select Account Role</label>
                     <select className="w-full h-9 bg-black text-xs px-2 rounded border border-zinc-800 text-zinc-200 appearance-none cursor-pointer" {...register("role")}>
-                        <option value="user">Standard User / Member</option>
+                        <option value="user">Standard User</option>
                         <option value="trainer">Gym Trainer</option>
-                        <option value="admin">System Administrator</option>
                     </select>
                 </div>
 
@@ -143,6 +142,12 @@ function RegisterForm() {
                 </svg>
                 Google Authentication
             </button>
+            <p className="mt-6 text-center text-xs text-zinc-500">
+                Already have an account?{" "}
+                <Link href="/login" className="text-zinc-300 hover:text-zinc-50 underline font-medium">
+                    Log In
+                </Link>
+            </p>
         </div>
     );
 }
