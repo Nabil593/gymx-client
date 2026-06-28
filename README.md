@@ -1,36 +1,45 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# IronPulse — Fitness & Gym Management Platform
 
-## Getting Started
+IronPulse is a professional-grade Fitness & Gym Management Platform designed to connect fitness enthusiasts with expert trainers. The platform provides a seamless experience for booking classes, engaging in community discussions, and managing fitness journeys with a clean, minimalist, and "pixel-perfect" UI.
 
-First, run the development server:
+## 🚀 Live Link
+https://gymx-client.vercel.app/
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠 Tech Stack
+*   **Frontend:** React.js, Next.js, Tailwind CSS, Shadcn UI, Framer Motion
+*   **Backend:** Node.js, Express.js
+*   **Database:** MongoDB
+*   **Authentication:** Better Auth
+*   **Payments:** Stripe API
+*   **State Management:** TanStack Query
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔑 Key Features
+*   **Role-Based Dashboards:** Unique interfaces for Members, Trainers, and Administrators.
+*   **Interactive Community Forum:** Read, comment, and vote on posts to engage with the fitness community.
+*   **Secure Payments:** Stripe-powered checkout for booking classes.
+*   **Smart Search & Filtering:** Powerful filtering by category and regex-based searching for classes.
+*   **Admin Control:** Complete oversight of users (block/unblock), trainer applications, and platform content.
+*   **Responsive Design:** Fully fluid layout optimized for all devices.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 📦 Core NPM Packages
+*   `framer-motion`: For high-end UI animations.
+*   `stripe`: For secure payment gateway integration.
+*   `axios`: For robust API requests.
+*   `react-hook-form` & `zod`: For schema-based form validation.
+*   `recharts`: For data visualization in the Admin Dashboard.
+*   `react-toastify`: For real-time user feedback.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## ⚙️ How to Run Locally
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Clone the project:**
+   ```bash
+   git clone [PASTE_CLIENT_REPO_LINK]
+   git clone [PASTE_SERVER_REPO_LINK]
