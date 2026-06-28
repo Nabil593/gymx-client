@@ -1,6 +1,6 @@
-# IronPulse — Fitness & Gym Management Platform
+# GymX — Fitness & Gym Management Platform
 
-IronPulse is a professional-grade Fitness & Gym Management Platform designed to connect fitness enthusiasts with expert trainers. The platform provides a seamless experience for booking classes, engaging in community discussions, and managing fitness journeys with a clean, minimalist, and "pixel-perfect" UI.
+GymX is a professional-grade Fitness & Gym Management Platform designed to connect fitness enthusiasts with expert trainers. The platform provides a seamless experience for booking classes, engaging in community discussions, and managing fitness journeys with a clean, minimalist, and "pixel-perfect" UI.
 
 ## 🚀 Live Link
 https://gymx-client.vercel.app/
@@ -37,9 +37,3 @@ https://gymx-client.vercel.app/
 
 ---
 
-## ⚙️ How to Run Locally
-
-1. **Clone the project:**
-   ```bash
-   git clone [PASTE_CLIENT_REPO_LINK]
-   git clone [PASTE_SERVER_REPO_LINK]
