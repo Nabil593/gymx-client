@@ -13,7 +13,6 @@ https://gymx-client.vercel.app/
 *   **Database:** MongoDB
 *   **Authentication:** Better Auth
 *   **Payments:** Stripe API
-*   **State Management:** TanStack Query
 
 ---
 
