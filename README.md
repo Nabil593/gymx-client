@@ -5,6 +5,8 @@ GymX is a professional-grade Fitness & Gym Management Platform designed to conne
 ## 🚀 Live Link
 https://gymx-client.vercel.app/
 
+Demo Admin email: admin420@gmail.com  
+Demo Admin Password: admin123$$$
 ---
 
 ## 🛠 Tech Stack
