@@ -2,11 +2,14 @@
 
 GymX is a professional-grade Fitness & Gym Management Platform designed to connect fitness enthusiasts with expert trainers. The platform provides a seamless experience for booking classes, engaging in community discussions, and managing fitness journeys with a clean, minimalist, and "pixel-perfect" UI.
 
-## 🚀 Live Link
-https://gymx-client.vercel.app/
+## Live Link: https://gymx-client.vercel.app/
 
+## Server Link: https://github.com/Nabil593/gymx-server
+
+## Admin Login Credentials:
 Demo Admin email: admin420@gmail.com  
 Demo Admin Password: admin123$$$
+
 ---
 
 ## 🛠 Tech Stack
